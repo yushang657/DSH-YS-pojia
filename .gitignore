@@ -53,3 +53,7 @@ test-results/
 
 # DSH local state
 .dsh*
+
+# 推广素材（内部资料，不入库）
+# 包含竞品分析、投放文案、视频脚本 —— 只需要本地留存，不对外。
+docs/promo/
