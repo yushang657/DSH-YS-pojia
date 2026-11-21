@@ -81,9 +81,21 @@ function useLang() {
   }, []);
   return lang;
 }
-		function useT() {
-			return translate;
-		}
+/**
+ * 取译文函数。
+ *
+ * 订阅语言变化：translate 本身按 currentLang 查字典，值是对的，但组件不重渲染
+ * 就看不见变化。这里挂一个空 setState 强制重渲染。
+ */
+function useT() {
+  const [, force] = useState(0);
+  useEffect(() => {
+    const fn = () => force((v) => v + 1);
+    langSubs.add(fn);
+    return () => { langSubs.delete(fn); };
+  }, []);
+  return translate;
+}
 		function clientGuessSurface() {
 			try {
 				if (typeof navigator !== "undefined" && /electron/i.test(navigator.userAgent || "")) return "desktop";
@@ -4595,7 +4607,6 @@ body[data-ds-dark-theme] .rt-rep-step-no,.dshp-dock[data-theme="dusk"] .rt-rep-s
 					try { obs?.disconnect(); } catch { /* ignore */ }
 				};
 			}, []);
-			translate = t;
 			return h("div", { className: "dshp-root", "data-theme": theme },
 				h("style", null, PURGE_CSS),
 				h(PurgifySection, null),
@@ -11896,8 +11907,6 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 				}, PurgeCommandInputView));
 			}
 			ctx.effect(() => ctx.locale.register(NS, { zh, en }), "ys-pojia: dictionaries");
-			const t = ctx.locale.bind(NS);
-			translate = t;
 			/* 语言值可能来自 ctx.locale（string）或 current()（函数/对象），
 			   取到就用，取不到保持 zh —— 界面文案有 zh 兜底，不会空白。 */
 			try {
