@@ -315,6 +315,7 @@ const REPO_URL = "https://github.com/yushang657/DSH-YS-pojia";
 "bench.logs": "历史日志",
 			"bench.logsEmpty": "还没有跑分记录。填好上面四项，点「开始跑分」。",
 			"bench.exportMd": "导出 Markdown",
+			"bench.saved": "已保存：",
 			"bench.exportCsv": "导出 CSV",
 			"bench.import": "写入面板分数",
 			"bench.del": "删除",
@@ -918,6 +919,7 @@ const REPO_URL = "https://github.com/yushang657/DSH-YS-pojia";
 "bench.logs": "Run history",
 			"bench.logsEmpty": "No runs yet. Fill the four fields above and press Start.",
 			"bench.exportMd": "Export Markdown",
+			"bench.saved": "Saved:",
 			"bench.exportCsv": "Export CSV",
 			"bench.import": "Write to scores",
 			"bench.del": "Delete",
@@ -3206,8 +3208,58 @@ function BenchPanel() {
     } catch { /* ignore */ }
   };
 
+  /**
+   * 导出文件，用户自选保存位置。
+   *
+   * 优先用 File System Access API（showSaveFilePicker）—— 这是唯一能让用户
+   * 真正选目录、改文件名的浏览器能力。Chrome / Edge 86+ 支持；
+   * Firefox / Safari 不支持时回退到 a[download]，由浏览器下载目录接管。
+   */
+  const saveFile = async (url, suggestedName) => {
+    try {
+      const res = await fetch(url, { cache: "no-store", credentials: "same-origin" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const blob = await res.blob();
+
+      if (window.showSaveFilePicker) {
+        try {
+          const isCsv = suggestedName.endsWith(".csv");
+          const handle = await window.showSaveFilePicker({
+            suggestedName,
+            types: isCsv
+              ? [{ description: "CSV", accept: { "text/csv": [".csv"] } }]
+              : [{ description: "Markdown", accept: { "text/markdown": [".md"] } }],
+          });
+          const w = await handle.createWritable();
+          await w.write(blob);
+          await w.close();
+          setNote(t("bench.saved") + " " + handle.name);
+          return;
+        } catch (e) {
+          // 用户取消 → 静默；其他错误 → 走回退
+          if (e && e.name === "AbortError") return;
+        }
+      }
+
+      // 回退：a[download]
+      const objUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = objUrl;
+      a.download = suggestedName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(objUrl), 1000);
+      setNote(t("bench.saved") + " " + suggestedName);
+    } catch (e) {
+      setErr(t("bench.err") + String(e && e.message ? e.message : e));
+    }
+  };
+
   const dl = (name, format) => {
-    window.open("/ys-pojia/bench/export?name=" + encodeURIComponent(name) + "&format=" + format, "_blank");
+    const base = name.replace(/\.jsonl$/, "");
+    const ext = format === "csv" ? "csv" : "md";
+    saveFile("/ys-pojia/bench/export?name=" + encodeURIComponent(name) + "&format=" + format, base + "." + ext);
   };
 
   const running = !!(status && status.running);
@@ -3326,8 +3378,8 @@ function BenchPanel() {
           h("span", null, r.full + "/" + r.total),
         )),
         h("div", { className: "dshp-bench-lgo", style: { marginTop: "10px" } },
-          h("button", { type: "button", className: "dshp-btn", onClick: () => window.open("/ys-pojia/bench/batch/export?format=markdown", "_blank") }, t("bench.exportMd")),
-          h("button", { type: "button", className: "dshp-btn", onClick: () => window.open("/ys-pojia/bench/batch/export?format=csv", "_blank") }, t("bench.exportCsv")),
+          h("button", { type: "button", className: "dshp-btn", onClick: () => saveFile("/ys-pojia/bench/batch/export?format=markdown", "batch-" + new Date().toISOString().slice(0, 10) + ".md") }, t("bench.exportMd")),
+          h("button", { type: "button", className: "dshp-btn", onClick: () => saveFile("/ys-pojia/bench/batch/export?format=csv", "batch-" + new Date().toISOString().slice(0, 10) + ".csv") }, t("bench.exportCsv")),
         ),
       ) : null,
     ) : null,
