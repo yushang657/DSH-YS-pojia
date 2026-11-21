@@ -10310,6 +10310,7 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 		 * 前端不硬编码规则名，改 md 或改目录后界面自动跟上。
 		 */
 		function ArmorRulesPanel() {
+  const lang = useLang();
 			const t = useT();
 			const [data, setData] = useState(null);
 			const [err, setErr] = useState("");
@@ -10322,13 +10323,13 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 
 			const load = useCallback(async () => {
 				try {
-					const d = await apiJson("/dsh-purge/armor/status");
+					const d = await apiJson("/dsh-purge/armor/status?locale=" + lang);
 					setData(d);
 					setErr("");
 				} catch (e) {
 					setErr(String((e && e.message) || e));
 				}
-			}, []);
+			}, [lang]);
 
 			useEffect(() => { load(); }, [load]);
 
