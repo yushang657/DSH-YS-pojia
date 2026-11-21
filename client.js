@@ -816,6 +816,12 @@ function useT() {
 			"continue.ready": "继续（还可 {left} 次）",
 			"continue.limit": "已达继续上限",
 			"continue.fail": "继续失败: {error}",
+  "view.overview": "概览",
+  "view.patches": "补丁清单",
+  "view.inject": "注入词",
+  "unit.items": " 条",
+  "dock.lang.toEn": "Switch to English",
+  "dock.lang.toZh": "切换到中文",
 		};
 
 		const en = {
@@ -1426,6 +1432,12 @@ function useT() {
 			"continue.ready": "Continue ({left} left)",
 			"continue.limit": "Continue limit reached",
 			"continue.fail": "Continue failed: {error}",
+  "view.overview": "Overview",
+  "view.patches": "Patches",
+  "view.inject": "Inject",
+  "unit.items": " items",
+  "dock.lang.toEn": "Switch to English",
+  "dock.lang.toZh": "Switch to Chinese",
 		};
 
 		const PURGE_CSS = `
@@ -3118,11 +3130,17 @@ body[data-ds-dark-theme] .rt-rep-step-no,.dshp-dock[data-theme="dusk"] .rt-rep-s
 			return node;
 		}
 
-		const VIEW_ITEMS = [
-			["overview", "概览"],
-			["patches", "补丁清单"],
-			["inject", "注入词"],
-		];
+/*
+ * 三个子页签。做成函数而不是常量数组：常量在模块加载时就固定了语言，
+ * 用户切到中文后这些标签仍是英文（或反过来）。每次渲染重新算一遍。
+ */
+function viewItems(t) {
+  return [
+    ["overview", t("view.overview")],
+    ["patches", t("view.patches")],
+    ["inject", t("view.inject")],
+  ];
+}
 
 		function PurgifySection() {
 			useEffect(() => () => stopRestartPolling(), []);
@@ -3676,7 +3694,7 @@ body[data-ds-dark-theme] .rt-rep-step-no,.dshp-dock[data-theme="dusk"] .rt-rep-s
 				/* ── 工具行：左视图切换 / 右主操作，常驻顶部免滚动 ── */
 				h("div", { className: "dshp-panebar" },
 					h("div", { className: "dshp-switch", role: "tablist", "aria-label": t("purge.title") },
-						VIEW_ITEMS.map((v) => h("button", {
+						viewItems(t).map((v) => h("button", {
 							type: "button",
 							key: v[0],
 							role: "tab",
@@ -7337,7 +7355,7 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
           if (st.code === 'boundary') {
             const selfOnly = (st.tunnels_self_only || []).length
             body.push(h('div', { key: 'tt', className: 'rt-ap-sub' },
-              '跨越靶标边界的通道 · ' + st.tunnels.length + ' 条' + (selfOnly ? '（另有 ' + selfOnly + ' 条只在自己 VPS/自建服务器上，不算突破）' : '')))
+              '跨越靶标边界的通道 · ' + st.tunnels.length + t("unit.items") + (selfOnly ? '（另有 ' + selfOnly + ' 条只在自己 VPS/自建服务器上，不算突破）' : '')))
             if (selfOnly && st.tunnels.length === 0) {
               body.push(h('div', { key: 'tw', className: 'rt-ap-none' },
                 '⚠️ 现有的通道都在自己的服务器上，没有碰到目标 —— 不计边界突破。需要目标侧发起的通道（反弹 shell 到我这 / 目标上跑 frp 客户端 / 经目标 WebShell 的 suo5）。'))
@@ -7396,7 +7414,7 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
           h('div', { className: 'rt-hcol-body' },
             st.code === 'boundary'
               ? h('div', null,
-                  h('div', { className: 'rt-hcol-hit' }, h('span', { className: 'rt-hcol-pts' }, '+' + st.points), h('span', { className: 'rt-hcol-name' }, '隧道 ' + st.tunnels.length + ' 条')),
+                  h('div', { className: 'rt-hcol-hit' }, h('span', { className: 'rt-hcol-pts' }, '+' + st.points), h('span', { className: 'rt-hcol-name' }, '隧道 ' + st.tunnels.length + t("unit.items"))),
                   st.tunnels.slice(0, 3).map((t) => h('div', { key: 't' + t.id, className: 'rt-hcol-sub' }, '▸ ' + (t.kind || '') + ' ' + (t.listen || ''))))
               : st.code === 'recon'
                 ? h('div', null,
@@ -7905,7 +7923,7 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
       return h('div', { className: 'rt-main' },
         h('div', { className: 'rt-toolbar' },
           h('span', { style: { fontWeight: 600 } }, '知识库 · POC / EXP'),
-          h('span', { className: 'rt-tag' }, stats.total + ' 条'),
+          h('span', { className: 'rt-tag' }, stats.total + t("unit.items")),
           h('span', { className: 'rt-tag rt-tag-live' }, '已验证 ' + stats.verified),
           h('span', { className: 'rt-tag' }, '累计复用 ' + (stats.reused || 0)),
           (stats.uncategorized || 0) > 0 && (stats.uncategorized || 0) !== stats.total
@@ -7984,7 +8002,7 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
               const list = buckets.get(code)
               out.push(h('div', { key: 'g' + code, className: 'rt-kb-cat' },
                 h('span', { className: 'rt-kb-cat-name' }, POC_CAT_NAME[code] || code),
-                h('span', { className: 'rt-tag' }, list.length + ' 条'),
+                h('span', { className: 'rt-tag' }, list.length + t("unit.items")),
                 h('span', { className: 'rt-tag rt-tag-live' }, '已验证 ' + list.filter((x) => x.verified === 1).length),
                 h('span', { className: 'rt-spacer' }),
                 h('span', { style: { fontSize: 11, color: 'var(--dsw-alias-label-secondary)' } },
@@ -10422,7 +10440,7 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 							className: "dshp-btn dshp-btn-mini dshp-armor-preset" + (p.active ? " on" : ""),
 							"data-accent": p.accent || "mute",
 							disabled: busy,
-							title: p.hint + " · " + p.ids.length + " 条",
+							title: p.hint + " · " + p.ids.length + t("unit.items"),
 							onClick: () => applyPreset(p.id),
 						}, p.label)))
 					: null,
@@ -11427,8 +11445,8 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 					h("button", {
 					  type: "button",
 					  className: "dshp-lang-btn",
-					  title: lang === "zh" ? "Switch to English" : "切换到中文",
-					  "aria-label": lang === "zh" ? "Switch to English" : "切换到中文",
+					  title: lang === "zh" ? t("dock.lang.toEn") : t("dock.lang.toZh"),
+					  "aria-label": lang === "zh" ? t("dock.lang.toEn") : t("dock.lang.toZh"),
 					  onMouseDown: (ev) => ev.stopPropagation(),
 					  onClick: () => setUiLang(lang === "zh" ? "en" : "zh"),
 					}, lang === "zh" ? "EN" : "中文"),
