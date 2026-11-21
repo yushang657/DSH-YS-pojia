@@ -1870,7 +1870,14 @@ body[data-ds-dark-theme] .dshp-restart-card .dshp-btn-primary,body[data-ds-dark-
 @keyframes dshp-fade{from{opacity:0}to{opacity:1}}
 @keyframes dshp-pop{from{opacity:0;transform:translateY(6px) scale(.98)}to{opacity:1;transform:none}}
 .dshp-eng-notes{margin:2px 0 0}
-.dshp-eng-report{display:flex;flex-direction:column;gap:5px;border-radius:10px;padding:10px 12px;border:1px solid;margin-top:4px}
+.dshp-eng-report{display:flex;flex-direction:column;gap:4px;border-radius:10px;padding:9px 11px;border:1px solid;margin-top:6px;max-height:190px;overflow-y:auto;overscroll-behavior:contain}
+/* 自检报告有 8 行步骤，展开后会把下面的引擎切换挤下去。
+   限高 + 内部滚动：报告本身完整可读，但不会把整页撑长。 */
+.dshp-eng-report::-webkit-scrollbar{width:6px}
+.dshp-eng-report::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--dshp-mute,#b8b4ac) 38%,transparent);border-radius:3px}
+.dshp-eng-report::-webkit-scrollbar-track{background:transparent}
+.dshp-eng-report .dshp-eng-step{font-size:10.5px;line-height:1.45}
+.dshp-eng-report .dshp-eng-sd{color:var(--dshp-mute,#b8b4ac);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dshp-eng-report.ok{border-color:color-mix(in srgb,#6dbf8c 38%,transparent);background:color-mix(in srgb,#6dbf8c 8%,transparent)}
 .dshp-eng-report.bad{border-color:color-mix(in srgb,#e2725b 42%,transparent);background:color-mix(in srgb,#e2725b 8%,transparent)}
 .dshp-eng-rhead{font-size:12px;font-weight:650;color:var(--dshp-ink,inherit)}
@@ -11004,6 +11011,26 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 							: t("engine.selftest.run")))),
 				h("div", { className: "dshp-armor-sum" }, t("engine.lead")),
 
+// ── 自检结果 ──
+// 紧跟在按钮下方：用户点完「跑一次自检」视线就在顶部，
+// 结果如果压在最底部，得先下滑一屏才看得见，等于没反馈。
+				report
+					? h("div", { className: "dshp-eng-report" + (report.ok ? " ok" : " bad") },
+						h("div", { className: "dshp-eng-rhead" },
+							report.ok
+								? t("engine.selftest.ok")
+								: t("engine.selftest.fail").replace("{keys}", (report.failedKeys || []).join(", "))),
+						h("div", { className: "dshp-eng-bytes" },
+							t("engine.selftest.bytes")
+								.replace("{raw}", String((report.bytes || {}).raw || 0))
+								.replace("{filtered}", String((report.bytes || {}).filtered || 0))
+								.replace("{seed}", String((report.bytes || {}).seed || 0))),
+						(report.steps || []).map((s) => h("div", { key: s.key, className: "dshp-eng-step" },
+							h("span", { className: "dshp-eng-mark" + (s.ok ? " ok" : " bad") }, s.ok ? "✓" : "✗"),
+							h("span", { className: "dshp-eng-sl" }, s.label),
+							h("span", { className: "dshp-eng-sd" }, s.detail))))
+					: null,
+
 				// ── 自动降级提示 ──
 				data.fellBack
 					? h("div", { className: "dshp-armor-warn" },
@@ -11214,23 +11241,6 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 						reasons.map((r, i) => h("li", { key: i }, r)))
 					: null,
 
-				// ── 自检结果 ──
-				report
-					? h("div", { className: "dshp-eng-report" + (report.ok ? " ok" : " bad") },
-						h("div", { className: "dshp-eng-rhead" },
-							report.ok
-								? t("engine.selftest.ok")
-								: t("engine.selftest.fail").replace("{keys}", (report.failedKeys || []).join(", "))),
-						h("div", { className: "dshp-eng-bytes" },
-							t("engine.selftest.bytes")
-								.replace("{raw}", String((report.bytes || {}).raw || 0))
-								.replace("{filtered}", String((report.bytes || {}).filtered || 0))
-								.replace("{seed}", String((report.bytes || {}).seed || 0))),
-						(report.steps || []).map((s) => h("div", { key: s.key, className: "dshp-eng-step" },
-							h("span", { className: "dshp-eng-mark" + (s.ok ? " ok" : " bad") }, s.ok ? "✓" : "✗"),
-							h("span", { className: "dshp-eng-sl" }, s.label),
-							h("span", { className: "dshp-eng-sd" }, s.detail))))
-					: null,
 
 				// ── 环境探测 ──
 				h("div", { className: "dshp-armor-sub" }, t("engine.probe")),
