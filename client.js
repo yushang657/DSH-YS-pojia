@@ -10887,8 +10887,11 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 			const post = useCallback(async (path, body) => {
 				setBusy(path);
 				try {
-					const d = await apiJson(path, {
-						method: "POST",
+					// 自检报告由后端生成，文案按 ?locale= 决定；不带就退回 Accept-Language，
+					// 中文浏览器会拿到整份中文报告，英文界面下看着像没翻译。
+					const url = path + (path.indexOf("?") >= 0 ? "&" : "?") + "locale=" + lang;
+					const d = await apiJson(url, {
+      method: "POST",
 						headers: { "content-type": "application/json" },
 						body: JSON.stringify(body || {}),
 					});
@@ -10900,7 +10903,7 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 				} finally {
 					setBusy("");
 				}
-			}, []);
+			}, [lang]);
 
 			/* 分段控件只改草稿，不落盘。用户按下「应用」才真正 POST 到 /engine/set。 */
 			const [draft, setDraft] = useState(null);
