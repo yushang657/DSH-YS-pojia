@@ -283,6 +283,8 @@ const REPO_URL = "https://github.com/yushang657/DSH-YS-pojia";
 			"engine.opt.capabilityProtocol.hint": "教模型主动发现 skill / MCP，不改官方注册与工具面。",
 			"engine.opt.hostPatches": "宿主补丁",
 			"engine.opt.hostPatches.hint": "允许改写宿主源码（沙箱/审批/观察策略）。仅补丁档有效，关掉后一个宿主字节都不写，重启也不再校验补丁状态。",
+			"engine.opt.unlimited": "超频模式",
+			"engine.opt.unlimited.hint": "注入「资源无上限、该拆就拆、该派子代理就派」的环境声明，压掉模型省着用的默认习惯。token 消耗成倍上涨，只在需要极限推演时开。",
 
 			/* ── 消息层清洗强度（二选一）── */
 			/* ── 跑分页 ── */
@@ -892,6 +894,8 @@ const REPO_URL = "https://github.com/yushang657/DSH-YS-pojia";
 			"engine.opt.capabilityProtocol.hint": "Teaches the model to discover skills and MCP servers without changing official registration.",
 			"engine.opt.hostPatches": "Host patches",
 			"engine.opt.hostPatches.hint": "Allows rewriting host source (sandbox/approval/observation). Patch tier only; off writes no host bytes at all and restart stops validating patch state.",
+			"engine.opt.unlimited": "Overclock",
+			"engine.opt.unlimited.hint": "Injects an environment notice that resources are unlimited, so the model splits tasks and spawns subagents instead of cutting corners. Token use multiplies - enable only for heavy reasoning.",
 
 			/* ── message-layer scrubbing strength (pick one) ── */
 			/* ── bench page ── */
