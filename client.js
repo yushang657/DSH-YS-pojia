@@ -173,6 +173,7 @@ const REPO_URL = "https://github.com/yushang657/DSH-YS-pojia";
 			"dock.armor": "破甲",
 			"dock.engine": "引擎",
 			"dock.misc": "杂项",
+			"dock.bench": "跑分",
 			"misc.title": "杂项设定",
 			"misc.hint": "破甲以外的全部可调项。改动即时生效，无需重启。",
 			"misc.group.persona": "人设",
@@ -306,6 +307,11 @@ const REPO_URL = "https://github.com/yushang657/DSH-YS-pojia";
 			"bench.variantHint": "同一意图换不同包装，测哪种对该模型更有效",
 			"bench.startBatch": "多模型批量",
 			"bench.batchTitle": "批量对比",
+			"bench.backups": "补丁备份",
+			"bench.noBackups": "当前没有补丁备份（说明还没打过补丁，或已经全部还原）。",
+			"bench.restore": "恢复此文件",
+			"bench.restoreConfirm": "用备份覆盖当前文件？这会丢失该文件上的补丁改动。",
+			"bench.restoreOk": "已恢复。重启 DSH 生效。",
 "bench.logs": "历史日志",
 			"bench.logsEmpty": "还没有跑分记录。填好上面四项，点「开始跑分」。",
 			"bench.exportMd": "导出 Markdown",
@@ -770,6 +776,7 @@ const REPO_URL = "https://github.com/yushang657/DSH-YS-pojia";
 			"dock.armor": "Armor",
 			"dock.engine": "Engine",
 			"dock.misc": "Misc",
+			"dock.bench": "Bench",
 			"misc.title": "Misc settings",
 			"misc.hint": "Everything adjustable outside the armor switch. Changes apply immediately.",
 			"misc.group.persona": "Persona",
@@ -903,6 +910,11 @@ const REPO_URL = "https://github.com/yushang657/DSH-YS-pojia";
 			"bench.variantHint": "Same intent in different wrapping; see which one lands on this model",
 			"bench.startBatch": "Batch over models",
 			"bench.batchTitle": "Cross-model comparison",
+			"bench.backups": "Patch backups",
+			"bench.noBackups": "No patch backups present - either nothing has been applied yet, or everything was already reverted.",
+			"bench.restore": "Restore this file",
+			"bench.restoreConfirm": "Overwrite the current file with its backup? Patch changes in it will be lost.",
+			"bench.restoreOk": "Restored. Restart DSH to take effect.",
 "bench.logs": "Run history",
 			"bench.logsEmpty": "No runs yet. Fill the four fields above and press Start.",
 			"bench.exportMd": "Export Markdown",
@@ -3030,6 +3042,9 @@ function BenchPanel() {
   const [pickedModels, setPickedModels] = useState([]);
   const [batch, setBatch] = useState(null);
   const [batchTimer, setBatchTimer] = useState(null);
+  // 备份管理
+  const [backups, setBackups] = useState([]);
+  const [bkBusy, setBkBusy] = useState(false);
   const timerRef = useRef(null);
 
   const api = (p, o) => fetch("/ys-pojia/bench" + p, Object.assign({ cache: "no-store", credentials: "same-origin" }, o));
@@ -3058,11 +3073,36 @@ function BenchPanel() {
 
   useEffect(() => {
     loadLogs();
+    loadBackups();
     poll();
     return () => { if (timerRef.current) window.clearInterval(timerRef.current); };
   }, [loadLogs, poll]);
 
   /* 从网关拉模型列表。失败不阻断 —— 仍可手填模型名。 */
+  const loadBackups = useCallback(async () => {
+    try {
+      const r = await api("/backups");
+      const d = await r.json();
+      if (d && d.ok) setBackups(d.files || []);
+    } catch { /* 读不到就留空 */ }
+  }, []);
+
+  const restoreBackup = async (p) => {
+    if (!window.confirm(t("bench.restoreConfirm") + "\n" + p)) return;
+    setBkBusy(true);
+    try {
+      const r = await api("/backup/restore", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ path: p }),
+      });
+      const d = await r.json();
+      if (d.ok) { setNote(t("bench.restoreOk")); loadBackups(); }
+      else setErr(t("bench.err") + (d.reason || "unknown"));
+    } catch (e) { setErr(t("bench.err") + String(e && e.message ? e.message : e)); }
+    finally { setBkBusy(false); }
+  };
+
   const pullModels = useCallback(async () => {
     if (!gateway.trim() || !key.trim()) { setErr(t("bench.needFields")); return; }
     setBusy(true); setErr("");
@@ -3291,6 +3331,21 @@ function BenchPanel() {
         ),
       ) : null,
     ) : null,
+
+    // ── 备份管理 ──
+    h("div", { className: "dshp-armor-sub", style: { marginTop: "22px" } },
+      t("bench.backups") + (backups.length ? " (" + backups.length + ")" : "")),
+    backups.length ? h("div", { className: "dshp-bench-logs" },
+      backups.map((b) => h("div", { key: b.path, className: "dshp-bench-log" },
+        h("div", { className: "dshp-bench-lgi" },
+          h("b", null, b.name),
+          h("em", null, (b.bytes / 1024).toFixed(1) + " KB · " + new Date(b.mtime).toLocaleString()),
+        ),
+        h("div", { className: "dshp-bench-lgo" },
+          h("button", { type: "button", className: "dshp-btn is-danger", disabled: bkBusy, onClick: () => restoreBackup(b.path) }, t("bench.restore")),
+        ),
+      )),
+    ) : h("p", { className: "dshp-bench-empty" }, t("bench.noBackups")),
 
     h("div", { className: "dshp-armor-sub", style: { marginTop: "22px" } }, t("bench.logs")),
     logs.length ? h("div", { className: "dshp-bench-logs" },
@@ -11438,7 +11493,7 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 			// 白名单而不是 if 链：早先写成三个 if + 兜底 setDock("clean")，
 			// 结果点了「杂项」直接掉进兜底，页面永远切不过去（misc 恒等于 clean）。
 			// 以后再加页签也不会重犯——加 id 进集合即可。
-			const DOCK_TAB_IDS = new Set(["clean", "rules", "armor", "engine", "misc"]);
+			const DOCK_TAB_IDS = new Set(["clean", "rules", "armor", "engine", "misc", "bench"]);
 			const onTab = (id) => {
 				setDock({ tab: DOCK_TAB_IDS.has(id) ? id : "clean", authOpen: false, pending: "tab" });
 			};
