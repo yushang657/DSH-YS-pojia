@@ -10855,8 +10855,8 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 		}
 
 		function EnginePanel() {
+  const lang = useLang();
 			const t = useT();
-			const lang = useLang();
 			const [data, setData] = useState(null);
 			const [err, setErr] = useState("");
 			const [busy, setBusy] = useState("");
@@ -10870,13 +10870,13 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 
 			const load = useCallback(async () => {
 				try {
-					const d = await apiJson("/ys-pojia/engine/status");
+					const d = await apiJson("/ys-pojia/engine/status?locale=" + currentLang);
 					setData(d);
 					setErr("");
 				} catch (e) {
 					setErr(String((e && e.message) || e));
 				}
-			}, []);
+			}, [lang]);
 
 			useEffect(() => { load(); }, [load]);
 
@@ -10913,7 +10913,7 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 				const nextOpts = draftOpts || data.options || {};
 				setBusy("/ys-pojia/engine/apply");
 				try {
-					const d = await apiJson("/ys-pojia/engine/set", {
+					const d = await apiJson("/ys-pojia/engine/set?locale=" + currentLang, {
 						method: "POST",
 						headers: { "content-type": "application/json" },
 						body: JSON.stringify({ engine: target, options: nextOpts }),
