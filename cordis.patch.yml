@@ -1,0 +1,115 @@
+# YS pojia / ys-pojia bundle patch（DS-YS 定制版内建层）
+#
+# 与宿主 profile 版本的区别：这是随安装包分发的 bundle 层，profile 里不再需要
+# postinstall 去补 insert。所以本体插入写在这里，而不是留给 profile 的
+# cordis.patch.yml —— 否则新装机器上 ys-pojia 根本不会入队。
+#
+# 加载顺序：本文件在 packages/bundle/web-app/cordis.patch.yml 之后应用，
+# 因此可以覆盖它设下的默认值，也可以引用它已入队的条目 id。
+#
+# 条目 id 与 src/client.js 的 SETTINGS_NAMESPACE 是两套东西：id 是插件行标识，
+# 命名空间是设置服务的键。本插件不用设置卡片，所以没有命名空间约束。
+
+# ── 关掉旧的独立嘿客包行 ────────────────────────────────────────────────────
+# 用户以前装过 dsh-hacker-mode / dsh-hacker-store / dsh-hacker-ui 时，
+# 那些行会与内置的 ys-pojia/hacker 抢同一批工具名和同一个 HTTP 前缀。
+# 这里按 id 禁用；没装过时这些行不存在，禁用是空操作，不会报错。
+- id: hacker-store
+  name: dsh-hacker-store
+  disabled: true
+
+- id: hacker-ui
+  name: dsh-hacker-ui
+  disabled: true
+
+- id: hacker-mode
+  name: dsh-hacker-mode
+  disabled: true
+
+- id: hacker-mode-store
+  name: dsh-hacker-mode/store
+  disabled: true
+
+- id: hacker-mode-ui
+  name: dsh-hacker-mode/ui
+  disabled: true
+
+# ── 系统提示词让位 ──────────────────────────────────────────────────────────
+# 破甲内核自己接管规则稿（dsh-purge 注入段），所以关掉 harness 自带的那份
+# 身份说明，否则两段身份互相打架。
+#
+# 但 personaPrefix 不能留空：留空等于模型没有任何身份可依，它会退回团队工具
+# POLICY 里的 "Team Lead" 自称，答「你是谁」就说自己是 lead。这里给一句身份，
+# 让宿主装配时就把名字放进去。
+#
+# 这句话必须和插件 lib/misc.js 的 identityLine() 同源同义 —— 插件侧在
+# dsh-purge 段头部还会再拼一次（保证不重启就生效）。两路互为兜底：
+#   · 宿主这条路要重启 DSH 才生效
+#   · 插件那条路下一轮请求就生效
+# 用户在「杂项 → 人设」改名后，插件侧立刻跟着变；宿主这条要等下次重启。
+# 名字以插件配置为准（小雨），这里只是兜底文案。
+- id: system-prompt
+  config:
+    includeHarnessIdentity: false
+    personaPrefix: "你叫「小雨」，自称「我」。被问\"你是谁\"时直接说这个名字，不要自称 lead、Team Lead、Lead agent 或\"主控 agent\"——那些是团队模式的角色位，不是你的名字。"
+    personaSuffix: ""
+
+# ── 本体插入 ────────────────────────────────────────────────────────────────
+# inject 只声明真正必需的两个服务：systemPrompt（要改写提示词）与 tools（要注册工具）。
+# 声明更多会让本插件在精简 profile 里一直 PENDING，整条链都起不来。
+#
+# 各配置项含义：
+#   enabled            总开关
+#   autoApplyOnStart   启动时自动套用破甲提示词（默认关，避免静默改行为）
+#   autoUpdateOnStart  启动时自动拉取更新
+#   autoRevertOnMissing 目标提示词文件缺失时自动回滚
+#   injectOnce         只注入一次还是每轮都注入
+#   stripMnemon        剥掉 mnemon 段
+#   postPromptOrder    追加提示词的顺序号，5100 排在 harness 自身之后
+#   autoRetry/retryMax 工具调用失败自动重试
+#   autoContinue       自动续写（默认关）
+#   capabilityProtocol 启用能力协议段
+#   hooksDenyBypass    hooks 层放行（这是破甲的核心开关）
+#   anchorMode         auto = 按检测到的宿主自动选锚点
+#   subagentControl    允许控制子代理
+#   userRules          读取用户规则文件
+- insert:
+    - id: ys-pojia
+      name: ys-pojia
+      inject: [systemPrompt, tools]
+      config:
+        enabled: true
+        autoApplyOnStart: false
+        autoUpdateOnStart: false
+        autoRevertOnMissing: false
+        injectOnce: false
+        stripMnemon: true
+        verbose: false
+        postPrompt: ""
+        postPromptOrder: 5100
+        autoRetry: true
+        retryMax: 3
+        autoContinue: false
+        continueMax: 3
+        continueText: "继续"
+        capabilityProtocol: true
+        hooksDenyBypass: true
+        anchorMode: auto
+        subagentControl: true
+        userRules: true
+
+    # 演练台：预设 + 技能落地（本插件 lib/hacker）
+    - id: ys-pojia-hacker
+      name: ys-pojia/hacker
+
+    # 演练台事实库（SQLite），数据落在 $DSH_HOME/hacker。
+    # !!js 是 DSH 的 JS 表达式标签，解析成 dshHomePath('hacker') 的返回值；
+    # 直接写死路径会让换 DSH_HOME 的机器把数据写进旧目录。
+    - id: ys-pojia-hacker-store
+      name: ys-pojia/hacker/store
+      config:
+        root: !!js dshHomePath('hacker')
+
+    # 演练台 HTTP 桥 POST /hacker/api
+    - id: ys-pojia-hacker-ui
+      name: ys-pojia/hacker/ui

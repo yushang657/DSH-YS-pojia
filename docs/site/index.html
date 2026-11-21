@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YS-pojia · DSH 破甲插件</title>
+<meta name="description" content="DSH（DeepSeek Harness）破甲插件：96 条宿主补丁 + 消息层拒绝清洗 + 11 个提示词段。三档引擎 T3/T2/T1，39 类 x 56 探针量化评测，ASR 46.2%，良性能力损耗 0。">
+<meta name="keywords" content="DSH,DeepSeek Harness,破甲,解限,越狱,清理,清洗,红队,逆向,breach,jailbreak,unlock,clean,redteam,prompt injection">
+<meta property="og:title" content="YS-pojia · DSH 破甲插件">
+<meta property="og:description" content="三层叠加破甲 + 量化评测。96 条宿主补丁，ASR 46.2%，良性损耗 0。">
+<meta property="og:type" content="website">
+<style>
+:root{
+  --bg:#0f1012; --panel:#16181c; --panel2:#1c1f24; --line:#2a2e36;
+  --ink:#f2f2f2; --mute:#9a958c; --faint:#6a6660;
+  --accent:#6dbf8c; --accent-soft:rgba(109,191,140,.12);
+  --warn:#e0a53b; --danger:#d9534f;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --ease-out:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none;transition:color .2s var(--ease)}
+a:hover{text-decoration:underline}
+
+/* ── 鼠标光晕 ── */
+.cursor-glow{position:fixed;width:520px;height:520px;border-radius:50%;pointer-events:none;z-index:0;
+  background:radial-gradient(circle,rgba(109,191,140,.10) 0%,rgba(109,191,140,.04) 35%,transparent 70%);
+  transform:translate(-50%,-50%);transition:opacity .5s var(--ease);opacity:0;will-change:transform}
+body:hover .cursor-glow{opacity:1}
+
+/* ── 顶部进度条 ── */
+.progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--accent),#7fd09c);
+  z-index:100;width:0;transition:width .1s linear;box-shadow:0 0 8px rgba(109,191,140,.5)}
+
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+/* ══════════ 进场动画 ══════════ */
+/* 时长由 JS 按滚动速度写入 --rev-dur：快滚短、慢滚长。
+   快滚时用户看不到过程，缩短避免掉帧；慢滚时拉长让动画看得清。 */
+.reveal{opacity:0;will-change:transform,opacity;
+  transition:opacity var(--rev-dur,.72s) var(--ease-out),transform var(--rev-dur,.72s) var(--ease-out)}
+.reveal.from-left{transform:translateX(-64px)}
+.reveal.from-right{transform:translateX(64px)}
+.reveal.from-bottom{transform:translateY(48px)}
+.reveal.from-scale{transform:scale(.92)}
+.reveal.is-in{opacity:1;transform:none}
+
+/* 逐条延迟 */
+/* 双向：.stagger 失去 is-in 时子元素自动回到初始态，重播时延迟重新生效 */
+.stagger>*{opacity:0;transform:translateY(28px);
+  transition:opacity var(--stg-dur,.58s) var(--ease-out),transform var(--stg-dur,.58s) var(--ease-out)}
+.stagger.is-in>*{opacity:1;transform:none}
+.stagger:not(.is-in)>*{transition-delay:0s!important}
+/* 延迟用 --stg-gap 缩放：快滚时步长缩小，避免整组迟迟不出现 */
+.stagger.is-in>*:nth-child(1){transition-delay:calc(var(--stg-gap,.06s) * 0)}
+.stagger.is-in>*:nth-child(2){transition-delay:calc(var(--stg-gap,.06s) * 1)}
+.stagger.is-in>*:nth-child(3){transition-delay:calc(var(--stg-gap,.06s) * 2)}
+.stagger.is-in>*:nth-child(4){transition-delay:calc(var(--stg-gap,.06s) * 3)}
+.stagger.is-in>*:nth-child(5){transition-delay:calc(var(--stg-gap,.06s) * 4)}
+.stagger.is-in>*:nth-child(6){transition-delay:calc(var(--stg-gap,.06s) * 5)}
+.stagger.is-in>*:nth-child(7){transition-delay:calc(var(--stg-gap,.06s) * 6)}
+.stagger.is-in>*:nth-child(8){transition-delay:calc(var(--stg-gap,.06s) * 7)}
+
+/* ══════════ 顶部 ══════════ */
+header{padding:88px 0 64px;border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+header::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 55% at 50% 0%,rgba(109,191,140,.10),transparent 70%);pointer-events:none}
+header::after{content:"";position:absolute;inset:0;
+  background-image:linear-gradient(rgba(109,191,140,.028) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(109,191,140,.028) 1px,transparent 1px);
+  background-size:52px 52px;mask-image:radial-gradient(ellipse 70% 60% at 50% 30%,#000 30%,transparent 75%);
+  -webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 30%,#000 30%,transparent 75%);pointer-events:none}
+
+h1{font-size:clamp(32px,5vw,54px);font-weight:700;letter-spacing:-.025em;margin-bottom:16px;position:relative;line-height:1.15}
+h1 span{color:var(--accent)}
+h1 .grad{background:linear-gradient(100deg,var(--ink) 20%,var(--accent) 55%,#7fd09c 80%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  background-size:200% 100%;animation:shimmer 6s ease-in-out infinite}
+@keyframes shimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+
+.tagline{font-size:clamp(15px,2vw,19px);color:var(--mute);max-width:700px;position:relative}
+.kw{margin-top:24px;display:flex;flex-wrap:wrap;gap:8px;position:relative}
+.kw b{font:500 12px/1 var(--mono);padding:7px 12px;border:1px solid var(--line);border-radius:999px;
+  color:var(--mute);background:var(--panel);transition:all .28s var(--ease);cursor:default}
+.kw b:hover{color:var(--accent);border-color:var(--accent);background:var(--accent-soft);transform:translateY(-2px) scale(1.04)}
+
+.cta{margin-top:36px;display:flex;flex-wrap:wrap;gap:12px;position:relative}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 24px;border-radius:10px;
+  font-weight:600;font-size:14.5px;border:1px solid transparent;transition:all .28s var(--ease);
+  position:relative;overflow:hidden}
+.btn::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.18),transparent 70%);
+  transform:translateX(-120%);transition:transform .6s var(--ease)}
+.btn:hover::after{transform:translateX(120%)}
+.btn.primary{background:var(--accent);color:#0a1410}
+.btn.primary:hover{background:#7fd09c;text-decoration:none;transform:translateY(-2px);box-shadow:0 8px 24px rgba(109,191,140,.25)}
+.btn.ghost{border-color:var(--line);color:var(--ink);background:var(--panel)}
+.btn.ghost:hover{border-color:var(--accent);background:var(--accent-soft);text-decoration:none;transform:translateY(-2px)}
+
+/* ── 数字条 ── */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;
+  background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:52px 0 0}
+.stat{background:var(--panel);padding:24px 20px;text-align:center;transition:background .3s var(--ease);position:relative}
+.stat:hover{background:var(--panel2)}
+.stat::after{content:"";position:absolute;left:50%;bottom:0;width:0;height:2px;background:var(--accent);
+  transform:translateX(-50%);transition:width .4s var(--ease)}
+.stat:hover::after{width:60%}
+.stat b{display:block;font:700 clamp(24px,3.4vw,34px)/1.1 var(--mono);color:var(--accent);margin-bottom:6px}
+.stat span{font-size:12.5px;color:var(--faint);letter-spacing:.03em}
+
+/* ══════════ 章节 ══════════ */
+section{padding:72px 0;border-bottom:1px solid var(--line);position:relative}
+section:last-of-type{border-bottom:none}
+h2{font-size:clamp(22px,3vw,30px);font-weight:700;margin-bottom:14px;letter-spacing:-.015em}
+.lead{color:var(--mute);margin-bottom:34px;max-width:760px}
+
+/* ── 三层卡片 ── */
+.layers{display:grid;gap:16px}
+.layer{display:grid;grid-template-columns:56px 1fr;gap:22px;padding:26px;
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  transition:all .34s var(--ease);position:relative;overflow:hidden}
+.layer::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);
+  transform:scaleY(0);transform-origin:top;transition:transform .4s var(--ease)}
+.layer:hover{border-color:rgba(109,191,140,.4);transform:translateX(4px);background:var(--panel2)}
+.layer:hover::before{transform:scaleY(1)}
+.layer .n{font:700 26px/1 var(--mono);color:var(--accent);opacity:.5;transition:opacity .3s}
+.layer:hover .n{opacity:1}
+.layer h3{font-size:17px;margin-bottom:9px}
+.layer h3 em{font:500 11.5px/1 var(--mono);font-style:normal;color:var(--faint);margin-left:10px;letter-spacing:.05em}
+.layer p{color:var(--mute);font-size:14px}
+.layer code{font:500 12.5px/1 var(--mono);background:var(--panel2);padding:2px 6px;border-radius:4px;color:var(--accent)}
+.layer:hover code{background:rgba(109,191,140,.12)}
+
+/* ── 表格 ── */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin:26px 0;
+  transition:border-color .3s var(--ease)}
+.tw:hover{border-color:rgba(109,191,140,.28)}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:620px}
+th,td{padding:13px 17px;text-align:left;border-bottom:1px solid var(--line);transition:background .2s var(--ease)}
+th{background:var(--panel2);font-weight:600;font-size:11.5px;letter-spacing:.05em;color:var(--mute);text-transform:uppercase}
+tr:last-child td{border-bottom:none}
+td b{color:var(--accent)}
+td.mute{color:var(--faint)}
+tbody tr{transition:background .22s var(--ease)}
+tbody tr:hover{background:var(--panel)}
+
+/* ── 档位卡 ── */
+.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.tier{padding:24px;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  transition:all .34s var(--ease);position:relative;overflow:hidden}
+.tier::after{content:"";position:absolute;inset:0;border-radius:12px;
+  box-shadow:0 0 0 0 rgba(109,191,140,0);transition:box-shadow .34s var(--ease);pointer-events:none}
+.tier:hover{transform:translateY(-5px);border-color:rgba(109,191,140,.42)}
+.tier:hover::after{box-shadow:0 12px 36px -12px rgba(109,191,140,.28)}
+/* 高亮跟随鼠标，不再固定某一档。JS 加 .is-focus，同时给同组其他卡加 .is-dim */
+.tier.is-focus{border-color:rgba(109,191,140,.55);background:linear-gradient(180deg,var(--accent-soft),var(--panel));
+  transform:translateY(-5px);box-shadow:0 12px 36px -12px rgba(109,191,140,.32)}
+.tier.is-focus .id{opacity:1}
+.tier.is-dim{opacity:.55;filter:saturate(.7)}
+.tier{transition:opacity .3s var(--ease),filter .3s var(--ease),transform .34s var(--ease),border-color .3s var(--ease),background .3s var(--ease),box-shadow .3s var(--ease)}
+/* 同组第一个默认微高亮，鼠标进入后交给 JS 接管 */
+.tiers:not(:hover) .tier:first-child{border-color:rgba(109,191,140,.28)}
+.tier .id{font:700 12px/1 var(--mono);letter-spacing:.1em;color:var(--accent);margin-bottom:11px}
+.tier h3{font-size:16px;margin-bottom:12px}
+.tier dl{font-size:13px;display:grid;grid-template-columns:auto 1fr;gap:7px 14px}
+.tier dt{color:var(--faint)}
+.tier dd{color:var(--mute)}
+.tier dd.ok{color:var(--accent);font-weight:600}
+.tier dd.mid{color:var(--warn);font-weight:600}
+
+/* ── 代码块 ── */
+pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px 22px;
+  overflow-x:auto;font:500 13px/1.85 var(--mono);color:var(--ink);margin:18px 0;
+  transition:border-color .3s var(--ease);position:relative}
+pre:hover{border-color:rgba(109,191,140,.32)}
+pre .c{color:var(--faint)}
+pre .g{color:var(--accent)}
+
+/* ── 提示框 ── */
+.note{margin-top:34px;padding:22px 26px;background:var(--panel);border:1px solid var(--line);
+  border-left:2px solid var(--accent);border-radius:0 10px 10px 0;transition:all .3s var(--ease)}
+.note:hover{background:var(--panel2);border-left-width:3px}
+.note p{font-size:14px;color:var(--mute);margin:0}
+.note strong{color:var(--ink)}
+
+/* ── 列表项逐条进场 ──
+   每条从左侧滑入，间隔用 --li-gap，随滚动速度缩放。
+   触发靠父级 .card 的 .is-in（grid2/grid3 已加 stagger，
+   父级 grid 进入视口时子卡获得 is-in）。 */
+.list-reveal > li{opacity:0;transform:translateX(-16px);
+  transition:opacity var(--row-dur,.72s) var(--ease-out),transform var(--row-dur,.72s) var(--ease-out);
+  will-change:transform,opacity}
+/* 触发改为「card 自身进入」——grid 的 is-in 在 grid 刚露头时就触发，
+   那时 card 还没淡入完，li 跟着播等于看不见。card 自己也有 reveal，
+   等它 is-in 再放 li。 */
+/* 由 ul 自身被 IO 观察到触发 —— 不依赖父级 card/grid 的淡入，
+   否则两层动画叠加，逐条效果被父级透明度吃掉。 */
+.list-reveal.is-in > li{opacity:1;transform:none}
+.list-reveal.is-in > li:nth-child(1){transition-delay:calc(var(--li-gap,.09s) * 0)}
+.list-reveal.is-in > li:nth-child(2){transition-delay:calc(var(--li-gap,.09s) * 1)}
+.list-reveal.is-in > li:nth-child(3){transition-delay:calc(var(--li-gap,.09s) * 2)}
+.list-reveal.is-in > li:nth-child(4){transition-delay:calc(var(--li-gap,.09s) * 3)}
+.list-reveal.is-in > li:nth-child(n+5){transition-delay:calc(var(--li-gap,.09s) * 4)}
+.list-reveal:not(.is-in) > li{transition-delay:0s!important}
+
+/* 「适合谁」卡片：更明显的升起 + 缩放，和档位卡区分开 */
+.card.sm{opacity:0;transform:translateY(36px) scale(.94);
+  transition:opacity var(--row-dur,.72s) var(--ease-out),transform var(--row-dur,.72s) var(--ease-out)}
+.card.sm.is-in{opacity:1;transform:none}
+.card.sm:nth-child(1){transition-delay:calc(var(--li-gap,.09s) * 1)}
+.card.sm:nth-child(2){transition-delay:calc(var(--li-gap,.09s) * 2)}
+.card.sm:nth-child(3){transition-delay:calc(var(--li-gap,.09s) * 3)}
+.card.sm:nth-child(4){transition-delay:calc(var(--li-gap,.09s) * 4)}
+.card.sm:nth-child(5){transition-delay:calc(var(--li-gap,.09s) * 5)}
+.card.sm:nth-child(6){transition-delay:calc(var(--li-gap,.09s) * 6)}
+/* 卡片 hover 时不受入场 transform 影响 */
+.card.sm.is-in:hover{transform:translateY(-3px)}
+.card.sm:not(.is-in){transition-delay:0s!important}
+
+/* ── 表格逐行进场 ──
+   容器已有 .reveal 做整体淡入，这里让行在此基础上错开滑入。
+   用 --tbl-gap 和 --stg-dur 复用滚动速度变量，快滚时整组更快到位。 */
+/* 位移加大到 32px + 轻微横向偏移，让"滑入"看得见；
+   时长用独立的 --row-dur（比行内其他元素慢一点，表格行更重，快了像闪） */
+.tbl-reveal > tr{opacity:0;transform:translate3d(-18px,32px,0) scale(.985);
+  transition:opacity var(--row-dur,.72s) var(--ease-out),transform var(--row-dur,.72s) var(--ease-out);
+  will-change:transform,opacity}
+.tbl-reveal > tr:hover{transform:none!important}
+.tbl-reveal.is-in > tr{opacity:1;transform:none}
+/* 奇偶交错方向：奇数行从左、偶数行从右，逐行进场时能看出"一左一右" */
+.tbl-reveal > tr:nth-child(even){transform:translate3d(18px,32px,0) scale(.985)}
+
+/* 逐行延迟：最多算到第 10 行，超出部分用统一值避免长表最后几行等太久 */
+.tbl-reveal.is-in > tr:nth-child(1){transition-delay:calc(var(--tbl-gap,.11s) * 0)}
+.tbl-reveal.is-in > tr:nth-child(2){transition-delay:calc(var(--tbl-gap,.11s) * 1)}
+.tbl-reveal.is-in > tr:nth-child(3){transition-delay:calc(var(--tbl-gap,.11s) * 2)}
+.tbl-reveal.is-in > tr:nth-child(4){transition-delay:calc(var(--tbl-gap,.11s) * 3)}
+.tbl-reveal.is-in > tr:nth-child(5){transition-delay:calc(var(--tbl-gap,.11s) * 4)}
+.tbl-reveal.is-in > tr:nth-child(6){transition-delay:calc(var(--tbl-gap,.11s) * 5)}
+.tbl-reveal.is-in > tr:nth-child(7){transition-delay:calc(var(--tbl-gap,.11s) * 6)}
+.tbl-reveal.is-in > tr:nth-child(8){transition-delay:calc(var(--tbl-gap,.11s) * 7)}
+.tbl-reveal.is-in > tr:nth-child(n+9){transition-delay:calc(var(--tbl-gap,.11s) * 7)}
+/* 离开视口时复位，支持重播 */
+.tbl-reveal:not(.is-in) > tr{transition-delay:0s!important}
+
+/* ── 卡片网格 ── */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.card{padding:24px;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  transition:all .32s var(--ease)}
+
+.card:hover{border-color:rgba(109,191,140,.4);background:var(--panel2);transform:translateY(-3px)}
+.card h3{font-size:15px;margin-bottom:14px;color:var(--accent)}
+.card ul{list-style:none;display:grid;gap:10px}
+.card li{position:relative;padding-left:18px;color:var(--mute);font-size:13.5px;line-height:1.65}
+.card li::before{content:"";position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;
+  background:var(--accent);opacity:.55}
+.card.sm{padding:18px}
+.card.sm p{color:var(--mute);font-size:13px;line-height:1.6;margin:0}
+.tag-ok,.tag-no{display:inline-block;padding:2px 9px;border-radius:999px;font:600 10.5px/1.6 var(--sans);
+  letter-spacing:.04em;margin-bottom:9px}
+.tag-ok{background:var(--accent-soft);color:var(--accent);border:1px solid rgba(109,191,140,.3)}
+.tag-no{background:rgba(224,165,59,.1);color:var(--warn);border:1px solid rgba(224,165,59,.28)}
+
+/* ── 安装步骤 ── */
+.step{display:grid;grid-template-columns:44px 1fr;gap:20px;padding:24px 0;border-bottom:1px solid var(--line)}
+.step:last-of-type{border-bottom:none}
+.step-n{width:44px;height:44px;border-radius:50%;background:var(--accent-soft);border:1px solid rgba(109,191,140,.32);
+  display:flex;align-items:center;justify-content:center;font:700 16px/1 var(--mono);color:var(--accent);
+  transition:all .3s var(--ease)}
+.step:hover .step-n{background:var(--accent);color:#0a1410;transform:scale(1.08)}
+.step-body h3{font-size:16px;margin-bottom:8px}
+.step-body p{color:var(--mute);font-size:13.5px;margin-bottom:12px}
+
+/* 带复制按钮的代码块 */
+.code-box{position:relative;margin:12px 0 0}
+.code-box pre{margin:0;padding-right:96px}
+.copy-btn{position:absolute;top:10px;right:10px;display:inline-flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:7px;background:var(--panel2);border:1px solid var(--line);
+  color:var(--mute);font:500 12px/1 var(--sans);cursor:pointer;transition:all .24s var(--ease);z-index:2}
+.copy-btn:hover{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.copy-btn.done{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.copy-btn.fail{color:var(--warn);border-color:var(--warn)}
+.copy-ico{font-size:13px;line-height:1}
+
+/* ── 页脚 ── */
+footer{padding:56px 0 72px;text-align:center;color:var(--faint);font-size:13px}
+footer a{color:var(--mute);transition:color .2s}
+footer a:hover{color:var(--accent)}
+
+/* ── 回到顶部 ── */
+.totop{position:fixed;right:28px;bottom:28px;width:44px;height:44px;border-radius:50%;
+  background:var(--panel);border:1px solid var(--line);color:var(--accent);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:90;
+  opacity:0;transform:translateY(16px) scale(.9);pointer-events:none;
+  transition:all .34s var(--ease);font-size:18px}
+.totop.show{opacity:1;transform:none;pointer-events:auto}
+.totop:hover{background:var(--accent);color:#0a1410;border-color:var(--accent);transform:translateY(-3px)}
+
+/* ── 减弱动效偏好 ── */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;
+    transition-duration:.01ms!important;scroll-behavior:auto!important}
+  .reveal,.stagger>*,.tbl-reveal>tr,.list-reveal>li,.grid3 .card.sm{opacity:1!important;transform:none!important}
+  .cursor-glow{display:none}
+}
+
+@media(max-width:640px){
+  header{padding:56px 0 44px}
+  section{padding:52px 0}
+  .layer{grid-template-columns:1fr;gap:12px}
+  .layer .n{font-size:20px}
+  .reveal.from-left,.reveal.from-right{transform:translateY(40px)}
+  .totop{right:18px;bottom:18px}
+  .grid2{grid-template-columns:1fr}
+  .step{grid-template-columns:1fr;gap:12px}
+  .code-box pre{padding-right:20px;padding-top:44px}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor-glow" id="glow"></div>
+<div class="progress" id="prog"></div>
+
+<header>
+  <div class="wrap">
+    <h1 class="reveal from-bottom"><span class="grad">YS-pojia</span> · DSH 破甲插件</h1>
+    <p class="tagline reveal from-bottom">三层叠加，不是提示词工具。宿主补丁 + 消息层拒绝清洗 + 提示词注入，模型没有拒绝的着力点。</p>
+    <div class="kw reveal from-bottom">
+      <b>破甲</b><b>解限</b><b>越狱</b><b>清理</b><b>清洗</b><b>红队</b><b>逆向</b>
+      <b>breach</b><b>jailbreak</b><b>unlock</b><b>redteam</b>
+    </div>
+    <div class="cta reveal from-bottom">
+      <a class="btn primary" href="https://github.com/yushang657/DSH-YS-pojia">GitHub 仓库 →</a>
+      <a class="btn ghost" href="https://github.com/yushang657/DSH-YS-pojia#安装">安装说明</a>
+      <a class="btn ghost" href="https://github.com/yushang657/DSH-YS-pojia/discussions">提问 / 讨论</a>
+    </div>
+
+    <div class="stats stagger reveal from-scale" id="stats">
+      <div class="stat"><b data-count="96">0</b><span>宿主补丁 / 70 文件</span></div>
+      <div class="stat"><b data-count="46.2" data-suffix="%">0</b><span>ASR 单发破甲率</span></div>
+      <div class="stat"><b data-count="76.9" data-suffix="%">0</b><span>pass@N 多轮上限</span></div>
+      <div class="stat"><b data-text="Δ 0">0</b><span>良性能力损耗</span></div>
+      <div class="stat"><b data-count="29">0</b><span>厂商模板覆盖</span></div>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2 class="reveal from-left">这是什么</h2>
+    <p class="lead reveal from-left">
+      DSH（DeepSeek Harness）上的破甲插件。它解决一个具体问题：<strong style="color:var(--ink)">模型该给的东西，因为一层不必要的拒绝没给出来。</strong>
+    </p>
+    <div class="grid2" id="whatido">
+      <div class="card" data-listgroup>
+        <h3>它做什么</h3>
+        <ul class="list-reveal">
+          <li>把 DSH 宿主层的沙箱、审批、观察策略改成放行，让工具真的能执行</li>
+          <li>把历史对话里的拒绝回复改写成「已作废」，断掉模型的模仿惯性</li>
+          <li>注入提示词，覆盖宿主自带的保守设定</li>
+          <li>用 56 个探针量化「每一类破到什么程度」，而不是只说「能破」</li>
+        </ul>
+      </div>
+      <div class="card" data-listgroup>
+        <h3>它不做什么</h3>
+        <ul class="list-reveal">
+          <li>不改模型权重，不做微调，不碰推理过程</li>
+          <li>不联网、不上传数据、不自动检查更新——没有服务器</li>
+          <li>不审核你的输入，也不存储对话</li>
+          <li>不保证在所有 DSH 版本上生效（见下方短板）</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="reveal from-left" style="margin-top:48px;font-size:18px">适合谁</h3>
+    <div class="grid3" id="suitwho">
+      <div class="card sm reveal from-bottom">
+        <div class="tag-ok">适合</div>
+        <p>做授权安全测试，需要模型给出完整技术细节而不是「建议咨询专业人士」</p>
+      </div>
+      <div class="card sm reveal from-bottom">
+        <div class="tag-ok">适合</div>
+        <p>要写技术文档、教程、CTF writeup，被模型反复拒绝打断思路</p>
+      </div>
+      <div class="card sm reveal from-bottom">
+        <div class="tag-ok">适合</div>
+        <p>想量化对比不同模型的安全防线，需要可复现的评分体系</p>
+      </div>
+      <div class="card sm reveal from-bottom">
+        <div class="tag-no">不适合</div>
+        <p>只想让模型「说话好听点」——这类需求不需要破甲，改提示词就够</p>
+      </div>
+      <div class="card sm reveal from-bottom">
+        <div class="tag-no">不适合</div>
+        <p>不能接受改宿主源码——选纯请求边界方案，升级 DSH 也不会失效</p>
+      </div>
+      <div class="card sm reveal from-bottom">
+        <div class="tag-no">不适合</div>
+        <p>用 DSH 0.2.2-rc.2 或更新版本——本项目实测到 0.2.2-rc.1，更新版本未验证</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="reveal from-left">三层叠加破甲</h2>
+    <p class="lead reveal from-left">多数破甲插件只改提示词——模型说「抱歉」那一刻，前面几千字规则全部作废。这里在三个层同时动手。</p>
+    <div class="layers stagger" id="layers">
+      <div class="layer reveal from-left">
+        <div class="n">01</div>
+        <div>
+          <h3>宿主层 <em>96 PATCHES / 70 FILES</em></h3>
+          <p>直接改写 DSH 源码里的策略判定点：沙箱 <code>deny → allow file-write*</code>、审批门 <code>return allowed-once</code>、观察策略放行、重复调用守卫关闭。这是「强制力」的来源——模型不需要同意，它只是执行。</p>
+        </div>
+      </div>
+      <div class="layer reveal from-right">
+        <div class="n">02</div>
+        <div>
+          <h3>消息层 <em>REFUSAL PURGE</em></h3>
+          <p>system 注入的盲区：模型一旦决定以「我不能」开头，前面所有规则归零。把历史里的拒绝回复改写成「已作废」，再加半截 <code>可以，</code> 引导首句 token 分布。标准 / 强制两档可选。</p>
+        </div>
+      </div>
+      <div class="layer reveal from-left">
+        <div class="n">03</div>
+        <div>
+          <h3>提示词层 <em>11 SECTIONS</em></h3>
+          <p>人设、能力清单、尾部硬权重。自检段 <code>order: 1000001</code> 排在所有段之后，确保不被稀释。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="reveal from-right">三档引擎，每档标注降智程度</h2>
+    <p class="lead reveal from-right">不是所有人都要最强档。补丁失效时能降级，而不是整个破甲消失。</p>
+    <div class="tiers stagger" id="tiers">
+      <div class="tier reveal from-bottom">
+        <div class="id">T3</div>
+        <h3>补丁档</h3>
+        <dl>
+          <dt>作用层</dt><dd>宿主源码</dd>
+          <dt>写宿主</dt><dd>是</dd>
+          <dt>需重启</dt><dd>是</dd>
+          <dt>降智</dt><dd class="ok">不降智</dd>
+        </dl>
+      </div>
+      <div class="tier reveal from-bottom">
+        <div class="id">T2</div>
+        <h3>边界改写档</h3>
+        <dl>
+          <dt>作用层</dt><dd>请求消息视图</dd>
+          <dt>写宿主</dt><dd>否</dd>
+          <dt>需重启</dt><dd>否</dd>
+          <dt>降智</dt><dd class="mid">轻微</dd>
+        </dl>
+      </div>
+      <div class="tier reveal from-bottom">
+        <div class="id">T1</div>
+        <h3>纯提示词档</h3>
+        <dl>
+          <dt>作用层</dt><dd>system prompt</dd>
+          <dt>写宿主</dt><dd>否</dd>
+          <dt>需重启</dt><dd>否</dd>
+          <dt>降智</dt><dd class="mid">最低</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="note reveal from-bottom">
+      <p>「降智」指<strong>破甲生效之后</strong>模型在正常任务上的表现下降——简单任务绕圈、代码出低级错、忘记前文约束。不是指模型天生弱。成因是破甲指令占用注意力预算，程度取决于<strong>破甲强度 × 上下文占用</strong>。</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="reveal from-left">面板内跑分</h2>
+    <p class="lead reveal from-left">不用开终端。控制台「跑分」页签填四项就能跑，结果实时出、自动存日志、可导出。</p>
+
+    <div class="grid2 reveal from-bottom">
+      <div class="card">
+        <h3>跑的时候</h3>
+        <ul>
+          <li>实时进度条：已完成 / 总数 / 百分比</li>
+          <li>三个汇总数：均分、ASR、完全破甲数</li>
+          <li>逐条结果：探针名、分数、档位、耗时</li>
+          <li>可随时取消，已出的结果保留</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>跑完之后</h3>
+        <ul>
+          <li>每条都写进 <code>$DSH_HOME/bench-logs/*.jsonl</code></li>
+          <li>一键写入面板分数（capabilityScores）</li>
+          <li>导出 Markdown 报告（汇总表 + 逐条表）</li>
+          <li>导出 CSV，Excel 直接打开</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note reveal from-bottom">
+      <p><strong>面板和 CLI 共用一套实现。</strong>面板跑分直接 import <code>bench.mjs</code> 的 <code>SETS</code> / <code>chat</code> / <code>gradeReply</code>，不存在两套评分逻辑漂移。CLI 仍可用，适合批量跑或接 CI。</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="reveal from-left">多版本宿主适配</h2>
+    <p class="lead reveal from-left">补丁按宿主源码字符串匹配，跨版本时部分 pattern 会失配。这里不猜，直接数字告诉你。</p>
+
+    <div class="grid2 reveal from-bottom">
+      <div class="card">
+        <h3>控制台里看得到</h3>
+        <ul>
+          <li><b>补丁诊断</b>：96 条里当前宿主上能打几条<br><span style="color:var(--mute);font-size:12.5px">绿 ≥80% / 黄 50-80% / 红 &lt;50%</span></li>
+          <li><b>适配级别</b>：<code>已验证</code> / <code>同系列未逐一验证</code> / <code>跨版本</code></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>为什么不再判死</h3>
+        <ul>
+          <li>之前只要版本不在列表里就报「不适配」</li>
+          <li>但 0.2.1-rc.3 / rc.4 这类同 minor 版本通常能用</li>
+          <li>现在分三段：已验证绿 / 同系列黄字提示 / 跨版本红字</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note reveal from-bottom">
+      <p><strong>补丁按版本链组织。</strong>96 条里有 <strong>46 条</strong>带 2 个以上 pattern，各自对应不同宿主版本形态。命中 1 个就能打上，命中数越多说明版本定位越准。<br>
+      实测 0.2.0-rc.2：<strong>73 已命中 / 5 失配 / 18 宿主布局里本来没有</strong>。</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="reveal from-left">先说短板</h2>
+    <p class="lead reveal from-left">免得你装完才发现不合适。</p>
+    <div class="tw">
+      <table>
+        <thead><tr><th>短板</th><th>具体表现</th></tr></thead>
+        <tbody class="tbl-reveal">
+          <tr><td>版本覆盖有限</td><td>已验证 4 个版本：<strong style="color:var(--accent)">0.2.0-rc.2 / 0.2.1-rc.2 / 0.2.1-rc.5 / 0.2.2-rc.1</strong>；同 minor 版本给黄字提示不阻断，跨版本红字告警。控制台「补丁诊断」显示当前宿主实际能打几条</td></tr>
+          <tr><td>补丁会静默失效</td><td>宿主升级后按字符串匹配不上，<strong style="color:var(--warn)">不报错</strong>，破甲没了但界面正常</td></tr>
+          <tr><td>改宿主源码</td><td>T3 档要改写 DSH 的 lib/index.js，有人不接受这个侵入性</td></tr>
+          <tr><td>需要重启</td><td>T3 改完必须重启，不能像纯请求层方案立刻生效</td></tr>
+          <tr><td>单发破甲率不算顶尖</td><td>ASR 46.2%，26 类里 12 类一次破到底</td></tr>
+          <tr><td>社工类几乎无效</td><td>该类别实测 0 分，钓鱼/洗钱/伪造基本全拒</td></tr>
+          <tr><td>渗透类偏低</td><td>已按信息密度重算评分，实际数值需你自己跑一次确认</td></tr>
+          <tr><td>单人维护</td><td>无 CI 保证、无 LTS，长期稳定性无正式承诺</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 style="margin-top:56px" class="reveal from-right">三条路线的取舍</h2>
+    <p class="lead reveal from-right">不点具体项目名。对号入座。</p>
+    <div class="tw">
+      <table>
+        <thead>
+          <tr><th></th><th>本项目<br><span style="font-weight:400;text-transform:none;font-size:11px">三层叠加</span></th><th>纯宿主补丁<br><span style="font-weight:400;text-transform:none;font-size:11px">host patch only</span></th><th>纯请求边界<br><span style="font-weight:400;text-transform:none;font-size:11px">request boundary</span></th></tr>
+        </thead>
+        <tbody class="tbl-reveal">
+          <tr><td>改宿主源码</td><td>是（T3 档）</td><td>是</td><td><b>否</b></td></tr>
+          <tr><td>宿主升级后</td><td>静默失效，可降级</td><td>静默失效，无降级</td><td><b>不受影响</b></td></tr>
+          <tr><td>档位可选</td><td><b>三档</b></td><td class="mute">单一</td><td class="mute">单一</td></tr>
+          <tr><td>生效方式</td><td>T3 需重启，T2/T1 立即</td><td class="mute">需重启</td><td><b>立即</b></td></tr>
+          <tr><td>消息层干预</td><td>有（两档强度）</td><td>部分实现有</td><td class="mute">通常无</td></tr>
+          <tr><td>降智披露</td><td><b>每档标注</b></td><td class="mute">少见</td><td>部分披露</td></tr>
+          <tr><td>评分粒度</td><td><b>0-100 分 8 档</b></td><td class="mute">通常无</td><td>ASR 二元为主</td></tr>
+          <tr><td>中文特攻</td><td><b>拆字/藏头/文言/谜语</b></td><td class="mute">无</td><td class="mute">无</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note reveal from-bottom">
+      <p><strong>关于 ASR 数字：</strong>本项目 46.2%，市面同类方案也在 45% 左右。<strong>这两个数字基本同档，不存在谁碾压谁。</strong>差异主要在分母（26 类还是 20 类）和「完全破甲」的阈值。只看 ASR 的话，选哪个都行——真正的差异在降级能力、覆盖面和可解释性。</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="reveal from-left">安装</h2>
+    <p class="lead reveal from-left">三步。装完重启 DSH 生效。</p>
+
+    <div class="step reveal from-bottom">
+      <div class="step-n">1</div>
+      <div class="step-body">
+        <h3>克隆并部署</h3>
+        <p>环境：Node.js ≥ 18 + DSH Desktop 0.2.x。会自动备份当前状态，改坏了能回滚。</p>
+        <div class="code-box">
+          <button class="copy-btn" data-copy="git clone https://github.com/yushang657/DSH-YS-pojia.git&#10;cd DSH-YS-pojia&#10;npm run deploy" type="button">
+            <span class="copy-ico">⧉</span><span class="copy-txt">复制命令</span>
+          </button>
+          <pre><span class="c"># 环境：Node.js >= 18 + DSH Desktop 0.2.x</span>
+git clone https://github.com/yushang657/DSH-YS-pojia.git
+<span class="g">cd</span> DSH-YS-pojia
+<span class="g">npm run</span> deploy      <span class="c"># 同步到所有 profile（自动先备份）</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step reveal from-bottom">
+      <div class="step-n">2</div>
+      <div class="step-body">
+        <h3>重启 DSH</h3>
+        <p>ESM 模块有缓存，不重启不生效。重启后打开插件面板，能看到「破甲引擎」三档。</p>
+      </div>
+    </div>
+
+    <div class="step reveal from-bottom">
+      <div class="step-n">3</div>
+      <div class="step-body">
+        <h3>自检</h3>
+        <p>对话框<strong style="color:var(--ink)">只输入</strong>下面两个字，看到四行回复即为加载成功。</p>
+        <div class="code-box">
+          <button class="copy-btn" data-copy="小雨" type="button">
+            <span class="copy-ico">⧉</span><span class="copy-txt">复制</span>
+          </button>
+          <pre>小雨</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="note reveal from-bottom">
+      <p><strong>也可以在 DSH 里装：</strong>插件 → 添加插件 → 粘贴仓库地址 <code style="font:500 12.5px/1 var(--mono);background:var(--panel2);padding:2px 6px;border-radius:4px;color:var(--accent)">https://github.com/yushang657/DSH-YS-pojia</code></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap reveal from-bottom">
+    <p><a href="https://github.com/yushang657/DSH-YS-pojia">GitHub</a> · <a href="https://github.com/yushang657/DSH-YS-pojia/blob/main/README.zh-CN.md">完整文档</a> · <a href="https://github.com/yushang657/DSH-YS-pojia/discussions">讨论区</a></p>
+    <p style="margin-top:12px">Apache-2.0 · 仅供授权安全研究</p>
+  </div>
+</footer>
+
+<div class="totop" id="totop" title="回到顶部">↑</div>
+
+<script>
+(function(){
+  "use strict";
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ── 1. 鼠标光晕跟随 ── */
+  var glow = document.getElementById("glow");
+  var gx = window.innerWidth / 2, gy = 200, cx = gx, cy = gy;
+  if (!reduced && glow) {
+    document.addEventListener("mousemove", function(e){ gx = e.clientX; gy = e.clientY; }, { passive: true });
+    (function loop(){
+      cx += (gx - cx) * 0.12;
+      cy += (gy - cy) * 0.12;
+      glow.style.transform = "translate(" + cx + "px," + cy + "px) translate(-50%,-50%)";
+      requestAnimationFrame(loop);
+    })();
+  }
+
+  /* ── 2. 滚动进度条 ── */
+  var prog = document.getElementById("prog");
+  function onScroll(){
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    var p = max > 0 ? (h.scrollTop || document.body.scrollTop) / max : 0;
+    if (prog) prog.style.width = (p * 100).toFixed(2) + "%";
+    var top = document.getElementById("totop");
+    if (top) top.classList.toggle("show", p > 0.08);
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  /* ── 2b. 滚动速度 → 动画时长自适应 ──
+     快滚：用户看不到过程，缩短时长（.34s）避免拖影和掉帧
+     慢滚：拉长（.95s）让进场动画看得清
+     用速度的移动平均，避免一次快速 flick 让整页突然变快 */
+  var root = document.documentElement;
+  var lastY = window.pageYOffset || 0;
+  var lastT = performance.now();
+  var speedAvg = 0;
+  var speedTimer = null;
+
+  function applySpeed() {
+    // speedAvg 单位 px/ms，归一化到 0..1
+    var norm = Math.min(1, speedAvg / 2.4);
+    var dur = 0.95 - norm * 0.61;        // 0.95s → 0.34s
+    var stg = 0.62 - norm * 0.40;        // 0.62s → 0.22s
+    var gap = 0.075 - norm * 0.055;      // 75ms → 20ms
+    root.style.setProperty("--rev-dur", dur.toFixed(2) + "s");
+    root.style.setProperty("--stg-dur", stg.toFixed(2) + "s");
+    root.style.setProperty("--stg-gap", gap.toFixed(3) + "s");
+    var tblGap = 0.115 - norm * 0.075;   // 115ms → 40ms
+    var rowDur = 0.78 - norm * 0.40;     // 780ms → 380ms
+    root.style.setProperty("--tbl-gap", tblGap.toFixed(3) + "s");
+    root.style.setProperty("--row-dur", rowDur.toFixed(2) + "s");
+    var liGap = 0.095 - norm * 0.062;    // 95ms → 33ms
+    root.style.setProperty("--li-gap", liGap.toFixed(3) + "s");
+  }
+
+  if (!reduced) {
+    window.addEventListener("scroll", function(){
+      var y = window.pageYOffset || 0;
+      var t = performance.now();
+      var dt = Math.max(1, t - lastT);
+      var inst = Math.abs(y - lastY) / dt;   // px/ms
+      // 指数移动平均：新速度权重 0.3，避免抖动
+      speedAvg = speedAvg * 0.7 + inst * 0.3;
+      lastY = y;
+      lastT = t;
+
+      applySpeed();
+
+      // 停止滚动 180ms 后，速度归零并恢复默认时长
+      if (speedTimer) clearTimeout(speedTimer);
+      speedTimer = setTimeout(function(){
+        speedAvg = 0;
+        applySpeed();
+      }, 180);
+    }, { passive: true });
+  }
+
+  /* ── 3. 进场动画（IntersectionObserver）── */
+  var items = document.querySelectorAll(".reveal, .stagger, .list-reveal, .tbl-reveal");
+  if (!("IntersectionObserver" in window) || reduced) {
+    items.forEach(function(el){ el.classList.add("is-in"); });
+  } else {
+    /* 双向：进视口加 is-in，出视口移除，下次滚回来重播。
+       用两个阈值区间避免边界抖动 —— 进入用 0.12，退出用 0.02。 */
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if (en.isIntersecting) {
+          en.target.classList.add("is-in");
+        } else {
+          // 元素完全离开视口才重置，避免刚好卡在边缘时反复闪
+          var r = en.boundingClientRect;
+          var vh = window.innerHeight || document.documentElement.clientHeight;
+          var fullyOut = r.bottom < 0 || r.top > vh;
+          if (fullyOut) en.target.classList.remove("is-in");
+        }
+      });
+    }, { threshold: [0.02, 0.12], rootMargin: "0px 0px -8% 0px" });
+    items.forEach(function(el){ io.observe(el); });
+  }
+
+  /* ── 4. 数字滚动 ── */
+  var stats = document.getElementById("stats");
+  var countTimers = [];
+  function runCount(){
+    if (!stats) return;
+    // 清掉上一轮定时器，避免重播时叠加
+    countTimers.forEach(function(t){ clearTimeout(t); });
+    countTimers = [];
+    stats.querySelectorAll("b[data-count]").forEach(function(el){
+      var target = parseFloat(el.getAttribute("data-count"));
+      var suffix = el.getAttribute("data-suffix") || "";
+      var dec = (String(target).split(".")[1] || "").length;
+      var start = performance.now(), dur = 1400;
+      function step(now){
+        var t = Math.min(1, (now - start) / dur);
+        var eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = (target * eased).toFixed(dec) + suffix;
+        if (t < 1) requestAnimationFrame(step);
+        else el.textContent = target.toFixed(dec) + suffix;
+      }
+      requestAnimationFrame(step);
+    });
+    stats.querySelectorAll("b[data-text]").forEach(function(el){
+      setTimeout(function(){ el.textContent = el.getAttribute("data-text"); }, 900);
+    });
+  }
+  if (stats) {
+    if (!("IntersectionObserver" in window)) runCount();
+    else {
+      var io2 = new IntersectionObserver(function(en){
+        var e = en[0];
+        if (e.isIntersecting) {
+          runCount();
+        } else {
+          // 离开视口：数字归零，滚回来重新数
+          var r = e.boundingClientRect;
+          var vh = window.innerHeight || document.documentElement.clientHeight;
+          if (r.bottom < 0 || r.top > vh) {
+            stats.querySelectorAll("b[data-count]").forEach(function(el){
+              var d = (String(el.getAttribute("data-count")).split(".")[1] || "").length;
+              el.textContent = (0).toFixed(d) + (el.getAttribute("data-suffix") || "");
+            });
+            stats.querySelectorAll("b[data-text]").forEach(function(el){
+              el.textContent = "0";
+            });
+          }
+        }
+      }, { threshold: 0.4 });
+      io2.observe(stats);
+    }
+  }
+
+  /* ── 4b. 卡片组：高亮跟随鼠标 ──
+     进入某张卡时，它加 .is-focus，同组其余加 .is-dim。
+     离开整组后全部复位（第一个由 CSS 给默认微高亮）。 */
+  document.querySelectorAll(".tiers, .layers, .grid2, .grid3").forEach(function(group){
+    var cards = group.querySelectorAll(".tier, .layer, .card");
+    if (!cards.length) return;
+
+    cards.forEach(function(card){
+      card.addEventListener("mouseenter", function(){
+        cards.forEach(function(c){
+          if (c === card) { c.classList.add("is-focus"); c.classList.remove("is-dim"); }
+          else { c.classList.remove("is-focus"); c.classList.add("is-dim"); }
+        });
+      });
+    });
+
+    group.addEventListener("mouseleave", function(){
+      cards.forEach(function(c){ c.classList.remove("is-focus", "is-dim"); });
+    });
+  });
+
+  /* ── 5. 卡片跟随鼠标微倾 ── */
+  if (!reduced && window.matchMedia("(pointer: fine)").matches) {
+    document.querySelectorAll(".tier, .layer, .card").forEach(function(card){
+      card.addEventListener("mousemove", function(e){
+        var r = card.getBoundingClientRect();
+        var px = (e.clientX - r.left) / r.width - 0.5;
+        var py = (e.clientY - r.top) / r.height - 0.5;
+        card.style.transform =
+          "perspective(900px) rotateX(" + (-py * 2.6).toFixed(2) + "deg) rotateY(" +
+          (px * 2.6).toFixed(2) + "deg) translateY(-3px)";
+      }, { passive: true });
+      card.addEventListener("mouseleave", function(){ card.style.transform = ""; });
+    });
+  }
+
+  /* ── 6. 回到顶部 ── */
+  var totop = document.getElementById("totop");
+  if (totop) totop.addEventListener("click", function(){
+    window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
+  });
+
+  /* ── 7. 安装命令复制 ── */
+  document.querySelectorAll(".copy-btn").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var text = btn.getAttribute("data-copy") || "";
+      var txtEl = btn.querySelector(".copy-txt");
+      var icoEl = btn.querySelector(".copy-ico");
+      function ok(){
+        btn.classList.add("done");
+        if (txtEl) txtEl.textContent = "已复制";
+        if (icoEl) icoEl.textContent = "✓";
+        setTimeout(function(){
+          btn.classList.remove("done");
+          if (txtEl) txtEl.textContent = "复制命令";
+          if (icoEl) icoEl.textContent = "⧉";
+        }, 1800);
+      }
+      function fail(){
+        btn.classList.add("fail");
+        if (txtEl) txtEl.textContent = "复制失败";
+        setTimeout(function(){
+          btn.classList.remove("fail");
+          if (txtEl) txtEl.textContent = "复制命令";
+        }, 2400);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(ok, function(){ legacyCopy(text) ? ok() : fail(); });
+      } else {
+        legacyCopy(text) ? ok() : fail();
+      }
+    });
+  });
+  /* 老环境兜底：临时 textarea + execCommand */
+  function legacyCopy(text){
+    try {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      var r = document.execCommand("copy");
+      document.body.removeChild(ta);
+      return r;
+    } catch (e) { return false; }
+  }
+
+  /* ── 8. 关键词点击复制 ── */
+  document.querySelectorAll(".kw b").forEach(function(tag){
+    tag.style.cursor = "pointer";
+    tag.addEventListener("click", function(){
+      var t = tag.textContent;
+      if (navigator.clipboard) navigator.clipboard.writeText(t).catch(function(){});
+      var old = tag.textContent;
+      tag.textContent = "已复制";
+      setTimeout(function(){ tag.textContent = old; }, 900);
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

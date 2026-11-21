@@ -1,0 +1,55 @@
+# Build artifacts
+*.log
+*.bak
+*.bak-*
+*.tmp
+
+# Runtime / user data
+gateway-endpoint.json
+gateway-endpoint.pc.json
+misc-settings.json
+*.db
+*.db-wal
+*.db-shm
+
+# Local template library (user content, too large for repo)
+pojia-templates/
+!pojia-templates/.gitkeep
+
+# Node
+node_modules/
+# 🔴 环境变量（GATEWAY_KEY 在这）—— 最常见的泄密源，官方 Node 模板条目
+.env
+.env.*
+!.env.example
+npm-debug.log*
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Preview files (dev-only)
+_*.html
+_*.md
+
+# Screenshots (may contain user data)
+docs/preview/
+
+# Coverage / caches (官方 Node 模板条目，防将来加测试时漏)
+coverage/
+.nyc_output/
+.eslintcache
+
+# Test output
+test-results/
+*.json.out
+
+# DSH local state
+.dsh*

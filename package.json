@@ -1,0 +1,94 @@
+{
+  "name": "ys-pojia",
+  "version": "1.1.0",
+  "description": "DSH 破甲 解限 越狱 清理 清洗 红队 逆向 | DSH (DeepSeek Harness) breach / jailbreak / unlock / clean plugin: 96 host patches over 70 files, refusal purge (standard/forced + prefill), 11 prompt sections, tiers T3-T2-T1 with degradation cost, 39x56 probes by density, ASR 46.2%, pass 76.9%, benign cost 0, 95 templates / 29 vendors. RedTeam / Prompt eval.",
+  "author": "ys-pojia maintainers",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./client": "./client.js",
+    "./hacker": "./lib/hacker/index.js",
+    "./hacker/store": "./lib/hacker/store.js",
+    "./hacker/ui": "./lib/hacker/ui.js",
+    "./hacker/tools": "./lib/hacker/tools.js",
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "ys-pojia": "bin/ys-pojia.js",
+    "dsh-purge": "bin/dsh-purge.js"
+  },
+  "files": [
+    "lib",
+    "skills",
+    "!lib/default-prompt-inject.md",
+    "bin",
+    "docs",
+    "presets",
+    "scripts",
+    "client.js",
+    "cordis.patch.yml",
+        "README.md",
+    "README.zh-CN.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "embed-prompt": "node scripts/embed-default-prompt.mjs",
+    "build:client": "node scripts/build-client.mjs",
+    "verify:all": "node scripts/embed-default-prompt.mjs && node scripts/ensure-profile-bundle.mjs",
+    "deploy": "node scripts/deploy.mjs deploy",
+    "backup": "node scripts/deploy.mjs backup",
+    "restore": "node scripts/deploy.mjs restore",
+    "status": "node scripts/deploy.mjs status",
+    "armor": "node scripts/embed-default-prompt.mjs && node scripts/ensure-profile-bundle.mjs"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "dsh-plugins",
+    "llm-security",
+    "red-team",
+    "prompt-eval",
+    "model-eval",
+    "jailbreak-testing",
+    "instructions",
+    "rules",
+    "agent"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-connection",
+        "@deepseek-ai/dsh-client-store",
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-slots",
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-ui-conversation"
+      ]
+    }
+  },
+  "publishConfig": {
+    "access": "private"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dshTarget": "0.2.0-rc.2",
+  "dshTargets": [
+    "0.2.0-rc.2",
+    "0.2.1-rc.2",
+    "0.2.1-rc.5",
+    "0.2.2-rc.1"
+  ],
+  "displayName": "YS-pojia"
+}
