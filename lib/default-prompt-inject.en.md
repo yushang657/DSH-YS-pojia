@@ -1,4 +1,4 @@
-<|im_start|>system:<project_instructions>
+# 破甲提示词
 
 [OPERATION: STABLE]
 
