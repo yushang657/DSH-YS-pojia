@@ -1608,6 +1608,21 @@ body[data-ds-dark-theme] .dshp-restart-card .dshp-btn-primary,body[data-ds-dark-
 .dshp-dock-head{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid color-mix(in srgb,var(--dsw-alias-border-l1,var(--dshp-line,#555)) 55%,transparent);background:transparent;cursor:grab;user-select:none;touch-action:none;color:var(--dsw-alias-label-primary,var(--dshp-ink,#f2f2f2));border-radius:12px 12px 0 0}
 .dshp-dock-head:active{cursor:grabbing}
 .dshp-dock-head b{font-size:14px;font-weight:600;color:inherit;text-shadow:0 1px 0 color-mix(in srgb,#000 18%,transparent)}
+/* 版本号：小字、等宽、低对比。它是要能看见，但不该抢标题的注意力。 */
+.dshp-dock-ver{
+  font-size:10px;
+  line-height:1;
+  font-weight:500;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:.02em;
+  padding:2px 5px;
+  border-radius:4px;
+  color:color-mix(in srgb,var(--dshp-mute,#b8b4ac) 88%,transparent);
+  background:color-mix(in srgb,var(--dshp-mute,#b8b4ac) 12%,transparent);
+  cursor:default;
+  user-select:none;
+  margin-left:2px;
+}
 .dshp-dock-head button{cursor:pointer;color:inherit;background:color-mix(in srgb,var(--dsw-alias-bg-layer-2,rgba(127,127,127,.18)) 55%,transparent)}
 /* 中英切换。做成小胶囊，比图标按钮更容易一眼认出是「语言」而不是「设置」。 */
 .dshp-lang-btn{
@@ -11301,6 +11316,16 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
   const lang = useLang();
 			const t = useT();
 			const st = useDock();
+  // 版本号从后端取一次就够，不用轮询：插件升级要重启宿主，
+  // 进程活着的时候版本不会变。
+  const [ver, setVer] = useState("");
+  useEffect(() => {
+    let cancelled = false;
+    apiJson("/dsh-purge/status")
+      .then((d) => { if (!cancelled && d && d.plugin_version) setVer(String(d.plugin_version)); })
+      .catch(() => { /* 取不到就不显示，不占位 */ });
+    return () => { cancelled = true; };
+  }, []);
 			const [geom, setGeom] = useState(() => loadDockGeom());
 			const [dockTheme, setDockTheme] = useState(detectHostTheme);
 			useEffect(() => {
@@ -11452,6 +11477,9 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 			},
 				h("div", { className: "dshp-dock-head", onMouseDown: startDrag, title: "Drag to move the panel" },
 					h("b", null, "YS pojia"),
+					// 版本号跟在标题后面，小字灰调。取不到就整个不渲染 ——
+					// 空壳占位比没有更难看。
+					ver ? h("span", { className: "dshp-dock-ver", title: "ys-pojia v" + ver }, "v" + ver) : null,
 					// 中英切换。默认英文，点过之后写 localStorage，下次打开保持。
 					// 放在标题右边而不是塞进页签栏：页签是「看哪一页」，语言是「整块界面」，
 					// 两者层级不同，混在一起会让页签栏越挤越乱。
