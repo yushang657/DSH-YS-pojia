@@ -192,6 +192,12 @@ const REPO_URL = "https://github.com/yushang657/DSH-YS-pojia";
 			"misc.group.auto": "自动化",
 			"misc.group.tools": "工具与权限",
 			"misc.group.host": "宿主行为",
+			"misc.group.mode": "模式预设",
+			"misc.mode.hint": "决定下次新建会话用哪个模式。当前会话的模式在创建时已固化，改不了。",
+			"misc.mode.current": "当前",
+			"misc.mode.switch": "切换",
+			"misc.mode.saved": "已切换，下次新建会话生效",
+			"misc.mode.fail": "切换失败",
 			"misc.prompt.identityCard": "身份卡",
 			"misc.prompt.identityCard.d": "把「你是谁」这段写进每轮提示词。关掉后宿主用自带身份。",
 			"misc.prompt.objective": "客观段",
@@ -795,6 +801,12 @@ const REPO_URL = "https://github.com/yushang657/DSH-YS-pojia";
 			"misc.group.auto": "Automation",
 			"misc.group.tools": "Tools and permissions",
 			"misc.group.host": "Host behavior",
+			"misc.group.mode": "Mode preset",
+			"misc.mode.hint": "Which mode new sessions start in. The current session's mode is fixed at creation.",
+			"misc.mode.current": "current",
+			"misc.mode.switch": "Switch",
+			"misc.mode.saved": "Switched; applies to the next new session",
+			"misc.mode.fail": "Switch failed",
 			"misc.prompt.identityCard": "Identity card",
 			"misc.prompt.identityCard.d": "Inject the who-you-are section each turn. Off falls back to the host identity.",
 			"misc.prompt.objective": "Objective section",
@@ -10489,6 +10501,9 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 			const [open, setOpen] = useState({ prompt: true, auto: false, tools: false, host: false });
 			const [notice, setNotice] = useState({ kind: "idle", text: "" });
 			const [busyKey, setBusyKey] = useState("");
+			// 模式预设：后端 /ys-pojia/mode 有完整能力，但前端一直没有入口，
+			// 用户在界面上根本看不到「下次新建会话用哪个模式」。这里接上。
+			const [modeData, setModeData] = useState(null);
 
 			const load = () => {
 				apiJson("/ys-pojia/misc")
@@ -10501,6 +10516,31 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 						}
 					})
 					.catch(() => setNotice({ kind: "error", text: t("misc.loadFail") }));
+				// 顺带拉模式列表：失败不影响其他项
+				apiJson("/ys-pojia/mode")
+				  .then((d) => { if (d && d.ok) setModeData(d); })
+				  .catch(() => {});
+			};
+
+			// 切换「下次新建会话用哪个模式」。
+			// 后端 POST /ys-pojia/mode/switch 一直存在，前端从没接 —— 用户看不到这个开关。
+			const switchMode = (id) => {
+			  setBusyKey("mode");
+			  apiJson("/ys-pojia/mode/switch", {
+			    method: "POST",
+			    headers: { "content-type": "application/json" },
+			    body: JSON.stringify({ mode: id }),
+			  })
+			    .then((d) => {
+			      if (d && d.ok) {
+			        setNotice({ kind: "ok", text: t("misc.mode.saved") });
+			        load();
+			      } else {
+			        setNotice({ kind: "error", text: t("misc.mode.fail") });
+			      }
+			    })
+			    .catch(() => setNotice({ kind: "error", text: t("misc.mode.fail") }))
+			    .finally(() => setBusyKey(""));
 			};
 
 			useEffect(load, []);
@@ -10548,6 +10588,42 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 					h("h4", null, t("misc.title")),
 					notice.kind === "idle" ? null : noticeNode(notice)),
 				h("p", { className: "dshp-hint", style: { margin: "0 0 8px", color: "var(--dshp-mute)", fontSize: 12 } }, t("misc.hint")),
+				// 模式预设卡片：后端 /ys-pojia/mode 一直有，前端从没接。
+				// 它决定「下次新建会话用哪个模式」，是用户能看到的唯一入口。
+				modeData ? h("div", { key: "__mode", className: "dshp-misc-card" },
+				  h("button", {
+				    type: "button",
+				    className: "dshp-misc-h",
+				    "aria-expanded": open.mode ? "true" : "false",
+				    onClick: () => setOpen((prev) => Object.assign({}, prev, { mode: !prev.mode })),
+				  },
+				    h("strong", null, t("misc.group.mode")),
+				    h("span", { style: { marginLeft: "auto", color: "var(--dshp-mute)", fontSize: 12 } },
+				      String(modeData.selected || modeData.current || "-")),
+				  ),
+				  open.mode ? h("div", { style: { padding: "4px 0 0" } },
+				    h("p", { className: "dshp-hint", style: { margin: "0 0 8px", color: "var(--dshp-mute)" } },
+				      t("misc.mode.hint")),
+				    (modeData.modes || []).map((m) => h("div", {
+				      key: m.id,
+				      className: "dshp-misc-row" + (modeData.selected === m.id ? " is-on" : ""),
+				      style: { display: "flex", alignItems: "center", gap: 8, padding: "6px 0" },
+				    },
+				      h("span", { style: { flex: 1 } },
+				        h("b", null, m.label || m.id),
+				        m.description ? h("span", { style: { color: "var(--dshp-mute)", marginLeft: 6, fontSize: 12 } }, m.description) : null,
+				      ),
+				      modeData.selected === m.id
+				        ? h("span", { style: { color: "var(--dshp-accent)", fontSize: 12 } }, t("misc.mode.current"))
+				        : h("button", {
+				            type: "button",
+				            className: "dshp-btn",
+				            disabled: !!busyKey,
+				            onClick: () => switchMode(m.id),
+				          }, t("misc.mode.switch")),
+				    )),
+				  ) : null,
+				) : null,
 				...schema.map((group) => {
 					const items = Array.isArray(group.items) ? group.items : [];
 					if (!items.length) return null;
