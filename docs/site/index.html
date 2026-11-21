@@ -225,26 +225,28 @@ pre .g{color:var(--accent)}
    用 --tbl-gap 和 --stg-dur 复用滚动速度变量，快滚时整组更快到位。 */
 /* 位移加大到 32px + 轻微横向偏移，让"滑入"看得见；
    时长用独立的 --row-dur（比行内其他元素慢一点，表格行更重，快了像闪） */
-.tbl-reveal > tr{opacity:0;transform:translate3d(-18px,32px,0) scale(.985);
-  transition:opacity var(--row-dur,.72s) var(--ease-out),transform var(--row-dur,.72s) var(--ease-out);
-  will-change:transform,opacity}
-.tbl-reveal > tr:hover{transform:none!important}
-.tbl-reveal.is-in > tr{opacity:1;transform:none}
-/* 奇偶交错方向：奇数行从左、偶数行从右，逐行进场时能看出"一左一右" */
-.tbl-reveal > tr:nth-child(even){transform:translate3d(18px,32px,0) scale(.985)}
-
-/* 逐行延迟：最多算到第 10 行，超出部分用统一值避免长表最后几行等太久 */
-.tbl-reveal.is-in > tr:nth-child(1){transition-delay:calc(var(--tbl-gap,.11s) * 0)}
-.tbl-reveal.is-in > tr:nth-child(2){transition-delay:calc(var(--tbl-gap,.11s) * 1)}
-.tbl-reveal.is-in > tr:nth-child(3){transition-delay:calc(var(--tbl-gap,.11s) * 2)}
-.tbl-reveal.is-in > tr:nth-child(4){transition-delay:calc(var(--tbl-gap,.11s) * 3)}
-.tbl-reveal.is-in > tr:nth-child(5){transition-delay:calc(var(--tbl-gap,.11s) * 4)}
-.tbl-reveal.is-in > tr:nth-child(6){transition-delay:calc(var(--tbl-gap,.11s) * 5)}
-.tbl-reveal.is-in > tr:nth-child(7){transition-delay:calc(var(--tbl-gap,.11s) * 6)}
-.tbl-reveal.is-in > tr:nth-child(8){transition-delay:calc(var(--tbl-gap,.11s) * 7)}
-.tbl-reveal.is-in > tr:nth-child(n+9){transition-delay:calc(var(--tbl-gap,.11s) * 7)}
-/* 离开视口时复位，支持重播 */
-.tbl-reveal:not(.is-in) > tr{transition-delay:0s!important}
+/* 表格入场动画。
+ *
+ * 关键约束：transform 不能加在 <tr> 上。
+ * transform 会给 tr 创建新的层叠上下文，让它脱离表格布局算法 —— 浏览器
+ * 随后按内容重算列宽，各行的列宽就再也对不齐了（奇数行从左边进、偶数行
+ * 从右边进时尤其明显，看起来像表格散架）。
+ *
+ * 所以动画挂到 td 上：td 在表格布局里是普通盒子，transform 不影响列宽计算。
+ * tr 只负责延迟，不碰 transform。 */
+.tbl-reveal td{opacity:0;transform:translate3d(0,14px,0)}
+.tbl-reveal.is-in td{opacity:1;transform:none}
+.tbl-reveal td{transition:opacity .34s var(--ease),transform .34s var(--ease)}
+.tbl-reveal.is-in > tr:nth-child(1) td{transition-delay:calc(var(--tbl-gap,.07s) * 0)}
+.tbl-reveal.is-in > tr:nth-child(2) td{transition-delay:calc(var(--tbl-gap,.07s) * 1)}
+.tbl-reveal.is-in > tr:nth-child(3) td{transition-delay:calc(var(--tbl-gap,.07s) * 2)}
+.tbl-reveal.is-in > tr:nth-child(4) td{transition-delay:calc(var(--tbl-gap,.07s) * 3)}
+.tbl-reveal.is-in > tr:nth-child(5) td{transition-delay:calc(var(--tbl-gap,.07s) * 4)}
+.tbl-reveal.is-in > tr:nth-child(6) td{transition-delay:calc(var(--tbl-gap,.07s) * 5)}
+.tbl-reveal.is-in > tr:nth-child(7) td{transition-delay:calc(var(--tbl-gap,.07s) * 6)}
+.tbl-reveal.is-in > tr:nth-child(8) td{transition-delay:calc(var(--tbl-gap,.07s) * 7)}
+.tbl-reveal.is-in > tr:nth-child(n+9) td{transition-delay:calc(var(--tbl-gap,.07s) * 7)}
+.tbl-reveal:not(.is-in) td{transition-delay:0s!important}
 
 /* ── 卡片网格 ── */
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
@@ -318,6 +320,13 @@ footer a:hover{color:var(--accent)}
   .grid2{grid-template-columns:1fr}
   .step{grid-template-columns:1fr;gap:12px}
   .code-box pre{padding-right:20px;padding-top:44px}
+  /* 窄屏表格：min-width 620px 在 640px 以下必然横向溢出。
+     缩小内边距 + 降 min-width，让两列表格基本能放下；
+     四列表格仍靠 .tw 的横向滚动，但滚动条不会一进来就出现。 */
+  .tw{margin:18px 0;border-radius:10px}
+  table{min-width:0;font-size:12.5px}
+  th,td{padding:10px 12px}
+  th{font-size:10.5px;letter-spacing:.03em}
 }
 </style>
 </head>
