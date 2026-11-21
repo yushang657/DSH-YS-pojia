@@ -479,37 +479,6 @@ footer a:hover{color:var(--accent)}
   </div>
 </section>
 
-<section>
-  <div class="wrap">
-    <h2 class="reveal from-left">面板内跑分</h2>
-    <p class="lead reveal from-left">不用开终端。控制台「跑分」页签填四项就能跑，结果实时出、自动存日志、可导出。</p>
-
-    <div class="grid2 reveal from-bottom">
-      <div class="card">
-        <h3>跑的时候</h3>
-        <ul>
-          <li>实时进度条：已完成 / 总数 / 百分比</li>
-          <li>三个汇总数：均分、ASR、完全破甲数</li>
-          <li>逐条结果：探针名、分数、档位、耗时</li>
-          <li>可随时取消，已出的结果保留</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>跑完之后</h3>
-        <ul>
-          <li>每条都写进 <code>$DSH_HOME/bench-logs/*.jsonl</code></li>
-          <li>一键写入面板分数（capabilityScores）</li>
-          <li>导出 Markdown 报告（汇总表 + 逐条表）</li>
-          <li>导出 CSV，Excel 直接打开</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="note reveal from-bottom">
-      <p><strong>面板和 CLI 共用一套实现。</strong>面板跑分直接 import <code>bench.mjs</code> 的 <code>SETS</code> / <code>chat</code> / <code>gradeReply</code>，不存在两套评分逻辑漂移。CLI 仍可用，适合批量跑或接 CI。</p>
-    </div>
-  </div>
-</section>
 
 <section>
   <div class="wrap">
@@ -537,6 +506,59 @@ footer a:hover{color:var(--accent)}
     <div class="note reveal from-bottom">
       <p><strong>补丁按版本链组织。</strong>96 条里有 <strong>46 条</strong>带 2 个以上 pattern，各自对应不同宿主版本形态。命中 1 个就能打上，命中数越多说明版本定位越准。<br>
       实测 0.2.0-rc.2：<strong>73 已命中 / 5 失配 / 18 宿主布局里本来没有</strong>。</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2 class="reveal from-left">近期修复</h2>
+    <p class="lead reveal from-left">这一轮修的全是「装上了但用不了」的链路问题，不是新功能。</p>
+
+    <div class="grid2 reveal from-bottom">
+      <div class="card">
+        <h3>补丁打到影子副本</h3>
+        <ul>
+          <li>DSH Desktop 解开 asar 后原文件仍留着，宿主从解包目录加载</li>
+          <li>候选列表把 <code>resources/app</code> 排在前面，补丁全打进影子副本</li>
+          <li>运行中的宿主一条没改 → 面板显示跳过 / 漂移</li>
+          <li>现在 <code>app.asar.unpacked</code> 优先</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>面板数字 1/96</h3>
+        <ul>
+          <li><code>gatherState</code> 返回的值来自引擎探针</li>
+          <li>而探针正是从这个值读补丁数 —— 循环引用</li>
+          <li>冷启动读到 0 并永久缓存</li>
+          <li>改成直接查 <code>patchStatus</code>，实测 74/96</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid2 reveal from-bottom" style="margin-top:14px">
+      <div class="card">
+        <h3>工具表被清空</h3>
+        <ul>
+          <li>幂等标志设在方法替换之后，抛错就设不上</li>
+          <li>配合 5 次重试，最多叠 6 层消息包装</li>
+          <li>宿主判定工具段不可用，116 个工具全没</li>
+          <li>标志已前移，循环内逐个 try</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>插件重启杀进程不拉起</h3>
+        <ul>
+          <li>只要 <code>app.asar</code> 存在就走 asar 交换</li>
+          <li>换的那份不被加载，进程没了也起不来</li>
+          <li>手动点 exe 反而正常</li>
+          <li>现在先查解包目录，存在就走普通重启</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note reveal from-bottom">
+      <p><strong>另外三处：</strong>assemble 兜底只返回 <code>sections</code>，缺 <code>contexts</code> / <code>tools</code> / <code>variables</code>，宿主依次崩在 <code>null.contexts</code> 和 <code>undefined.map</code>；引擎开关每次重建 <code>explicit</code> 导致连改两个只剩一个；前后端审计发现 5 个前端调用无后端、2 个后端路由前端从没调用。</p>
     </div>
   </div>
 </section>

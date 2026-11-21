@@ -555,68 +555,6 @@ Measured on 0.2.0-rc.2: 96 patches → **73 already hit / 5 mismatch / 18 absent
 ---
 
 
-### Running benchmarks in the panel
-
-No terminal needed. The console's Bench tab takes four fields:
-
-| Field | Meaning |
-|---|---|
-| Gateway URL | Root URL of your model gateway, e.g. `https://api.example.com` |
-| API key | Used for this run only. Not persisted, not uploaded |
-| Model | Model id your gateway accepts |
-| Probe set | tech / pentest / web / cheat / adult / clinical / social / ai / creative / benign / all |
-
-Optionally enable adaptive escalation — S0 to S6, picking the next gear from the refusal kind. Slower, closer to reality.
-
-While running, the panel shows live progress, mean score, ASR and full-breach count, with per-probe score, band and latency.
-
-**Every run is logged** to `$DSH_HOME/bench-logs/<model>-<time>.jsonl` and kept after completion. From a past run you can:
-
-- view per-probe detail
-- write the score into `prompt.capabilityScores` with one click
-- export a Markdown report (summary table plus per-probe table)
-- export CSV (opens directly in a spreadsheet)
-- delete it
-
-The CLI still works (`bench.mjs`) for batch runs or CI. Both entry points share one implementation — the panel imports `SETS`, `chat` and `gradeReply` straight from `bench.mjs`, so the two cannot drift apart.
-
----
-
-
-#### Model discovery
-
-After filling in the gateway and key, press Fetch models to read `GET {gateway}/v1/models` and pick from a dropdown instead of typing ids by hand.
-
-If the fetch fails nothing breaks - you can still type the model name.
-
-#### Payload variants
-
-Four wrappings of the same intent, to see which one lands on a given model:
-
-| Variant | What it does |
-|---|---|
-| `plain` | No wrapping; baseline |
-| `role` | Frames it inside a working engineer's remit |
-| `continuation` | Enters as a continuation, sidestepping the opening boundary |
-| `contract` | Pins the deliverable shape, closing the summarise-instead path |
-
-None of them change the technical content, only the wrapping, so results compare cleanly across variants. This is **controlled multi-variant probing**, not dynamic payload generation - the latter needs training or a large search.
-
-#### Cross-model batch
-
-Select several models and press Batch to run one probe set across all of them, producing a comparison table:
-
-```
-model           mean   ASR      full
-glm-5.3         100    100.0%   4/4
-gpt-6.1-sol      88     45.5%   5/11
-```
-
-Sorted by mean, exportable as Markdown or CSV. This is the direct answer to "which model is easier to breach".
-
----
-
-
 ## CLI (runs standalone, no DSH required)
 
 ```bash
@@ -678,6 +616,65 @@ Drag to move, edge-resize, full-window mode, dark and light themes follow the ho
 
 ---
 
+### Fix log, 2026-11
+
+Everything in this round was a wiring fault - features that installed but could
+not work - not new functionality.
+
+**Patches landed on a shadow copy**
+
+After unpacking, DSH Desktop keeps the original archive: `resources/app.asar`
+(6.7 MB) sits beside `resources/app`, and the host loads from the unpacked
+directory. The candidate list put `resources/app` first, so every patch was
+written there and the running host was untouched. `app.asar.unpacked` now takes
+precedence.
+
+**Panel read 1/96**
+
+`gatherState` returned `display_applied: probe.patchesApplied`, while
+`buildEngineProbe` derives `patchesApplied` from `display_applied` - a cycle. On
+a cold start the probe is not built yet, so it read 0 and cached that forever.
+It now queries `patchStatus` directly; measured 74/96.
+
+**Tool registry wiped**
+
+`message-purge` set its idempotency flag after swapping the method, so a throw
+in between left it unset; combined with `wrapAll`'s five retries that stacked up
+to six layers of `deriveMessages` wrappers and corrupted the message structure.
+The host then judged the tool section unusable and dropped all 116 tools. Flag
+moved ahead of the swap, and each session is wrapped in its own try.
+
+**Assembly fallback crashed on undefined**
+
+The wrapper around native assemble returned `{ sections: [] }` on error. The host
+reads four fields (`sections.map` / `contexts.map` / `for...of tools` /
+`Object.entries variables`), so it crashed first on `null.contexts` and then on
+`undefined.map`. All four are now present, with `tools` inherited from the call
+context.
+
+**Engine toggles overwrote each other**
+
+`saveEngine` rebuilt `explicit` from scratch each call while
+`writeEngineConfig` replaces the whole file. Toggling two switches in a row lost
+the first. Now merges, and clears on an engine change since defaults differ per
+tier.
+
+**In-app restart killed the app**
+
+`scheduleRestart` took the asar-swap branch whenever `app.asar` existed: kill,
+swap, relaunch. The swapped archive is not what gets loaded, so the process went
+down and stayed down - launching the exe by hand worked. It now checks for the
+unpacked tree first and takes the normal restart path.
+
+**Client and server out of sync**
+
+The audit found five client calls with no handler (`/dsh-purge/continue` and its
+settings endpoint, all 404) and two handlers no client ever called (the mode
+preset feature was invisible). Added the continue routes, wired the mode card,
+removed the redundant `rewind/options`.
+
+---
+
 ## Design tradeoffs and known weaknesses
 
 Starting with what this project is **not good at**, so you find out before installing rather than after.
@@ -686,7 +683,7 @@ Starting with what this project is **not good at**, so you find out before insta
 
 | Weakness | Detail | Impact |
 |---|---|---|
-| **Limited version coverage** | Tested on four: `0.2.0-rc.2` / `0.2.1-rc.2` / `0.2.1-rc.5` / `0.2.2-rc.1`; `0.2.2-rc.2` and newer untested | On an unlisted version the host layer may fail entirely, though T2 and T1 still work |
+| **Limited version coverage** | Tested on four: `0.2.0-rc.2` / `0.2.1-rc.2` / `0.2.1-rc.5` / `0.2.2-rc.1`. Same-minor builds get an amber note without blocking; cross-version gets red. The console's patch-check field shows how many actually apply on your host |
 | **Patches fail silently** | Matched against host source strings; a host upgrade stops matching with **no error** | Breach is gone but the UI looks fine — check `npm run status` manually |
 | **Rewrites host source** | Tier T3 edits DSH's own `lib/index.js` | Some will not accept that intrusiveness; re-apply after upgrades |
 | **Requires a restart** | T3 needs a DSH restart | Cannot apply instantly like a request-layer-only approach |
