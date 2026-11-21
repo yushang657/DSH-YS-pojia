@@ -10337,7 +10337,11 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 				setBusy(true);
 				setSaving(mark || "");
 				try {
-					const d = await apiJson(path, {
+					// 提交后后端会把整份目录再发回来，它按 ?locale= 决定语言。
+					// 不带 locale 就退回 Accept-Language（浏览器是 zh-CN），返回中文数据，
+					// setData 一覆盖，英文界面就变回中文 —— 用户看到的是「点开关语言自己变了」。
+					const url = path + (path.indexOf("?") >= 0 ? "&" : "?") + "locale=" + lang;
+					const d = await apiJson(url, {
 						method: "POST",
 						headers: { "content-type": "application/json" },
 						body: JSON.stringify(body || {}),
@@ -10352,7 +10356,7 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 					setBusy(false);
 					setSaving("");
 				}
-			}, []);
+			}, [lang]);
 
 			const setAll = (mode) => post("/dsh-purge/armor/set", { enabledIds: mode }, "all");
 			const reset = () => post("/dsh-purge/armor/reset", {}, "reset");
