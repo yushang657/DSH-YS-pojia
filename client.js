@@ -13,13 +13,74 @@ const REPO_URL = "https://github.com/yushang657/DSH-YS-pojia";
 		const name = "ys-pojia";
 		const inject = ["slots", "locale", "uiConversation"];
 		const NS = "settings.ys-pojia";
-		let translate = (key) => key;
+/*
+ * 取译文。
+ *
+ * 直接按 currentLang 查本地字典，不走 ctx.locale.bind —— 那个绑定跟的是宿主
+ * locale，用户点面板里的中英切换时它不会变，界面文案会停在旧语言上。
+ *
+ * 缺键时的兜底顺序：当前语言 → 另一种语言 → 键名本身。保留最后一步是为了
+ * 漏翻时界面上能看见键名、一眼定位，而不是空白。
+ */
+let translate = (key) => {
+  const dict = currentLang === "zh" ? zh : en;
+  const other = currentLang === "zh" ? en : zh;
+  const v = dict[key];
+  if (v !== undefined) return v;
+  const o = other[key];
+  if (o !== undefined) return o;
+  return key;
+};
 		/* 当前界面语言。ctx.locale.bind() 出来的 translate 只给译文，
 		   组件里要按语言切 label_en / lockedReason_en，所以单独留一个口子。 */
-		let currentLang = "zh";
-		function useLang() {
-			return currentLang;
-		}
+/*
+ * 界面语言。
+ *
+ * 默认英文：插件的用户面里非中文用户占多数，英文做默认不用先切一次。
+ * 用户手动切到中文后写 localStorage，下次打开保持 —— 存的是「用户的选择」，
+ * 不是宿主 locale，所以宿主切语言不会把他刚选的覆盖掉。
+ */
+const LANG_KEY = "ys-pojia.uiLang";
+let currentLang = "en";
+/** 读用户上次的选择。没存过返回空串，交给调用方走默认。 */
+function readStoredLang() {
+  try {
+    const v = window.localStorage.getItem(LANG_KEY);
+    return v === "zh" || v === "en" ? v : "";
+  } catch { return ""; }
+}
+/** 写用户的选择。localStorage 不可用（隐私模式）时静默失败。 */
+function storeLang(lang) {
+  try { window.localStorage.setItem(LANG_KEY, lang === "zh" ? "zh" : "en"); } catch { /* ignore */ }
+}
+/* 启动时先套用用户存过的选择；没有就保持默认 en。 */
+currentLang = readStoredLang() || "en";
+/** 语言变化的订阅者。切换后让顶层组件重渲染。 */
+const langSubs = new Set();
+function setUiLang(lang) {
+  const next = lang === "zh" ? "zh" : "en";
+  if (next === currentLang) return;
+  currentLang = next;
+  storeLang(next);
+  for (const fn of langSubs) { try { fn(next); } catch { /* ignore */ } }
+}
+/**
+ * 读当前界面语言，并在切换时触发重渲染。
+ *
+ * 早先它只是 return 一个模块级变量 —— 切语言时值变了，但没有任何组件知道
+ * 该重渲染，界面就停在旧语言上。现在挂一个订阅，切换时 setState。
+ */
+function useLang() {
+  const [lang, setLang] = useState(currentLang);
+  useEffect(() => {
+    const fn = (next) => setLang(next);
+    langSubs.add(fn);
+    // 订阅建立之前可能已经切过，补一次同步
+    setLang(currentLang);
+    return () => { langSubs.delete(fn); };
+  }, []);
+  return lang;
+}
 		function useT() {
 			return translate;
 		}
@@ -1524,6 +1585,26 @@ body[data-ds-dark-theme] .dshp-restart-card .dshp-btn-primary,body[data-ds-dark-
 .dshp-dock-head:active{cursor:grabbing}
 .dshp-dock-head b{font-size:14px;font-weight:600;color:inherit;text-shadow:0 1px 0 color-mix(in srgb,#000 18%,transparent)}
 .dshp-dock-head button{cursor:pointer;color:inherit;background:color-mix(in srgb,var(--dsw-alias-bg-layer-2,rgba(127,127,127,.18)) 55%,transparent)}
+/* 中英切换。做成小胶囊，比图标按钮更容易一眼认出是「语言」而不是「设置」。 */
+.dshp-lang-btn{
+  cursor:pointer;
+  font-size:11px;
+  line-height:1;
+  font-weight:600;
+  letter-spacing:.02em;
+  padding:4px 9px;
+  border-radius:999px;
+  color:inherit;
+  background:color-mix(in srgb,var(--dshp-accent,#6ea8fe) 18%,transparent);
+  border:1px solid color-mix(in srgb,var(--dshp-accent,#6ea8fe) 42%,transparent);
+  transition:background .15s ease,border-color .15s ease,transform .1s ease;
+}
+.dshp-lang-btn:hover{
+  background:color-mix(in srgb,var(--dshp-accent,#6ea8fe) 30%,transparent);
+  border-color:color-mix(in srgb,var(--dshp-accent,#6ea8fe) 65%,transparent);
+}
+.dshp-lang-btn:active{transform:scale(.95)}
+.dshp-lang-btn:focus-visible{outline:2px solid color-mix(in srgb,var(--dshp-accent,#6ea8fe) 70%,transparent);outline-offset:2px}
 .dshp-dock-tabs{display:flex;gap:8px;padding:0 12px;border-bottom:1px solid color-mix(in srgb,var(--dsw-alias-border-l1,var(--dshp-line,#555)) 55%,transparent);background:transparent}
 /* ── 破甲规则控件 ── */
 .dshp-armor{display:flex;flex-direction:column;gap:10px;padding:4px 2px 12px;color:var(--dshp-ink,inherit)}
@@ -11175,6 +11256,7 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 		}
 
 		function PurgeDock() {
+  const lang = useLang();
 			const t = useT();
 			const st = useDock();
 			const [geom, setGeom] = useState(() => loadDockGeom());
@@ -11328,6 +11410,17 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 			},
 				h("div", { className: "dshp-dock-head", onMouseDown: startDrag, title: "Drag to move the panel" },
 					h("b", null, "YS pojia"),
+					// 中英切换。默认英文，点过之后写 localStorage，下次打开保持。
+					// 放在标题右边而不是塞进页签栏：页签是「看哪一页」，语言是「整块界面」，
+					// 两者层级不同，混在一起会让页签栏越挤越乱。
+					h("button", {
+					  type: "button",
+					  className: "dshp-lang-btn",
+					  title: lang === "zh" ? "Switch to English" : "切换到中文",
+					  "aria-label": lang === "zh" ? "Switch to English" : "切换到中文",
+					  onMouseDown: (ev) => ev.stopPropagation(),
+					  onClick: () => setUiLang(lang === "zh" ? "en" : "zh"),
+					}, lang === "zh" ? "EN" : "中文"),
 					h("span", { style: { flex: 1 } }),
 					h("button", { type: "button", onClick: () => setDock({ open: false, authOpen: false, tab: "clean", pending: "tab" }) }, t("dock.close")),
 				),
@@ -11810,7 +11903,12 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 			try {
 				const cur = typeof ctx.locale.current === "function" ? ctx.locale.current() : ctx.locale.current;
 				const lang = typeof cur === "string" ? cur : (cur && (cur.lang || cur.locale || cur.id));
-				if (typeof lang === "string" && lang) currentLang = /^en/i.test(lang) ? "en" : "zh";
+/* 宿主的 locale 只作为「用户没手动选过」时的兜底。
+ * 用户点过中英切换就以他的选择为准 —— 否则宿主切语言会把他刚选的覆盖掉，
+ * 表现就是「点了中文，过一会儿自己变回英文」。 */
+if (!readStoredLang() && typeof lang === "string" && lang) {
+  currentLang = /^zh/i.test(lang) ? "zh" : "en";
+}
 			} catch { /* 保持默认 */ }
 			ctx.slots.inject("shell.overlay", () => ctx.slots.register({
 				name: "shell.overlay",
