@@ -11139,15 +11139,12 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 						const keys = Object.keys(meta);
 						return keys.map((key) => {
 							const m = meta[key] || {};
-							const label = lang === "en"
-								? (m.label_en || m.label || key)
-								: (m.label || key);
-							const desc = lang === "en"
-								? (m.desc_en || m.desc || "")
-								: (m.desc || "");
-							const reason = lang === "en"
-								? (m.lockedReason_en || m.lockedReason || "")
-								: (m.lockedReason || "");
+							const label = m.label || key;
+							const desc = m.desc || "";
+							// 后端已经按 locale pick 过 lockedReason（英文界面拿到的就是英文），
+							// 这里不要再判一次语言 —— 前端再判一遍，一旦 lang 和实际渲染的语言有偏差
+							// 就会出现「切了开关语言跟着变」的错乱。
+							const reason = meta.lockedReason || "";
 							const usable = cur[key] === true;
 							// 有 reason 才代表"这档确实不支持"；没有 reason 的键只是信息性开关
 							const lockable = !usable && !!reason;
@@ -11181,9 +11178,7 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 						const meta = (data.features || {})[key] || {};
 						const cur = (engines.find((e) => e.id === shown) || {}).features || {};
 						const off = cur[key] === false && !!meta.lockedReason;
-						const reason = lang === "en"
-							? (meta.lockedReason_en || meta.lockedReason || "")
-							: (meta.lockedReason || "");
+						const reason = meta.lockedReason || "";
 						const remembered = Array.isArray(data.explicitKeys) && data.explicitKeys.includes(key);
 						return h("label", {
 							key,
