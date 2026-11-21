@@ -11346,7 +11346,7 @@ body[data-ds-dark-theme] .rt-scope-testing,.dshp-dock[data-theme="dusk"] .rt-sco
 			// 白名单而不是 if 链：早先写成三个 if + 兜底 setDock("clean")，
 			// 结果点了「杂项」直接掉进兜底，页面永远切不过去（misc 恒等于 clean）。
 			// 以后再加页签也不会重犯——加 id 进集合即可。
-			const DOCK_TAB_IDS = new Set(["clean", "rules", "armor", "engine", "misc", "bench"]);
+  const DOCK_TAB_IDS = new Set(["clean", "rules", "armor", "engine", "misc"]);
 			const onTab = (id) => {
 				setDock({ tab: DOCK_TAB_IDS.has(id) ? id : "clean", authOpen: false, pending: "tab" });
 			};

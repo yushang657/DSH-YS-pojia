@@ -557,8 +557,29 @@ footer a:hover{color:var(--accent)}
       </div>
     </div>
 
+    <div class="grid2 reveal from-bottom" style="margin-top:14px">
+      <div class="card">
+        <h3>中英切换不生效</h3>
+        <ul>
+          <li><code>translate</code> 启动时被宿主 locale 绑定覆盖了两次</li>
+          <li>那个绑定跟宿主语言，不看面板开关</li>
+          <li>删掉覆盖，改成按当前语言查本地字典</li>
+          <li><code>useLang</code> / <code>useT</code> 挂订阅，切换真正重渲染</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>开关导致语言跳回</h3>
+        <ul>
+          <li>破甲页、引擎页的写操作提交时没带 locale</li>
+          <li>后端退回读浏览器语言（中文环境拿到中文）</li>
+          <li><code>setData</code> 一覆盖，界面就变回中文</li>
+          <li>所有写操作现在都带 locale，并依赖语言变化重载</li>
+        </ul>
+      </div>
+    </div>
+
     <div class="note reveal from-bottom">
-      <p><strong>另外三处：</strong>assemble 兜底只返回 <code>sections</code>，缺 <code>contexts</code> / <code>tools</code> / <code>variables</code>，宿主依次崩在 <code>null.contexts</code> 和 <code>undefined.map</code>；引擎开关每次重建 <code>explicit</code> 导致连改两个只剩一个；前后端审计发现 5 个前端调用无后端、2 个后端路由前端从没调用。</p>
+      <p><strong>另外四处：</strong>assemble 兜底只返回 <code>sections</code>，缺 <code>contexts</code> / <code>tools</code> / <code>variables</code>，宿主依次崩在 <code>null.contexts</code> 和 <code>undefined.map</code>；引擎开关每次重建 <code>explicit</code> 导致连改两个只剩一个；前后端审计发现 5 个前端调用无后端、2 个后端路由前端从没调用；自检报告压在页面底部，点完要下滑一屏半才看得见，现已移到按钮下方并限高。</p>
     </div>
   </div>
 </section>
