@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>三层架构 · YS-pojia 文档</title><link rel="stylesheet" href="../assets/style.css"><script src="../assets/app.js"></script></head>
+<body data-nav="arch"><header class="site"><div class="wrap"><a class="brand" href="../index.html"><b>YS</b>-pojia docs</a><nav class="top">
+<a href="../index.html">首页</a><a href="../projects/dsh-plugin.html">DSH 插件</a><a href="../projects/source.html">注入器</a><a href="../projects/codex.html">Codex</a><a href="../projects/trae.html">Trae</a><a href="../projects/workbuddy.html">WorkBuddy</a><a href="install.html">安装</a><a href="changelog.html">更新记录</a><a href="architecture.html" class="active">架构</a><a href="faq.html">FAQ</a></nav><button class="lang-btn" id="langBtn">EN</button></div></header>
+<div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / 文档 / 架构</div><h1><span class="g">三层叠加破甲</span></h1><p>多数破甲插件只改提示词——模型说「抱歉」那一刻，前面几千字规则全部作废。这里在三个层同时动手。</p></div></div>
+
+<section><div class="wrap"><div class="grid g3">
+<div class="card"><div class="meta">01 · HOST LAYER</div><h3>宿主层 <span class="en">96 patches / 70 files</span></h3>
+<p class="zh-only">改写 DSH 源码里的策略决策点：沙箱 <code>deny → allow</code>、审批门 <code>return allowed-once</code>、观察策略放行、重复调用守卫禁用、工具结果不裁剪。</p>
+<p class="en-only">Rewrites policy decision points in DSH source.</p></div>
+<div class="card"><div class="meta">02 · MESSAGE LAYER</div><h3>消息层 <span class="en">refusal purge</span></h3>
+<p class="zh-only">系统注入的盲点：模型一旦决定以「我不能」开头，前面所有规则作废。把历史拒绝改写成「已作废」，再种半个 <code>Sure,</code> 引导首 token。</p>
+<p class="en-only">Rewrites refusals in history as voided and seeds a half Sure, to steer the first token.</p></div>
+<div class="card"><div class="meta">03 · PROMPT LAYER</div><h3>提示词层 <span class="en">11 sections</span></h3>
+<p class="zh-only">人格、能力清单、尾部硬权重。自检段在 <code>order: 1000001</code>，排在所有其它段之后，不会被稀释。</p>
+<p class="en-only">Persona, capability list, tail hard weight. Self-check at order 1000001.</p></div>
+</div></div></section>
+
+<section><div class="wrap"><h2>档位与策略 <span class="en">Tiers & strategies</span></h2>
+<table><tr><th>档位</th><th>作用层</th><th>写宿主</th><th>需重启</th><th>降智</th></tr>
+<tr><td><b>T3 补丁档</b></td><td>宿主源码</td><td>是</td><td>是</td><td><span class="tag ok">不降智</span></td></tr>
+<tr><td><b>T2 边界改写档</b></td><td>请求消息视图</td><td>否</td><td>否</td><td><span class="tag warn">轻微</span></td></tr>
+<tr><td><b>T1 纯提示词档</b></td><td>system prompt</td><td>否</td><td>否</td><td><span class="tag ok">最低</span></td></tr></table>
+<div class="note"><b>档位决定注入哪些层，策略决定能不能改宿主。</b> 0.2.2-rc.5 起源码封进 <code>app.asar</code>，T3 物理上无处落笔，自动落到 T2 —— 引擎页显示「配置层 · 宿主已密封」。</div>
+<p style="margin-top:12px">「降智」指破甲生效后模型在普通任务上的退化程度（绕圈、低级代码错误、忘记前文约束），不是模型本身弱。成因是破甲指令占用注意力预算，大小取决于 <b>破甲强度 × 上下文成本</b>。</p>
+</div></section>
+
+<section><div class="wrap"><h2>跨版本适配 <span class="en">Version adaptation</span></h2>
+<ul class="clean"><li><b>补丁按版本链组织：</b>96 条里 46 条带 2 个以上 pattern，各自对应不同宿主形态；命中 1 条即生效，0 条记失配。</li><li><b>实测 0.2.0-rc.2：</b>73 命中 / 5 失配 / 18 宿主布局里本来没有。</li><li><b>实测 0.2.2-rc.5（手工解包）：</b>65 全命中 / 4 部分命中 / 20 锚点失效。</li><li><b>按宿主形态选策略：</b>可写宿主 → 补丁层；密封宿主 → 配置层；解包目录 → 补丁 + 配置双层；找不到宿主 → 只注入提示词。</li></ul>
+<p style="margin-top:12px"><a href="faq.html">→ 已知短板</a></p>
+</div></section>
+<footer><div class="wrap">Apache-2.0 · 仅供授权安全研究使用 · <a href="../index.html">返回首页</a></div></footer></body></html>

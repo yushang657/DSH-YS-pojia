@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DSH-ys-pojia 破甲插件 · YS-pojia 文档</title><link rel="stylesheet" href="../assets/style.css"><script src="../assets/app.js"></script></head>
+<body data-nav="dsh"><header class="site"><div class="wrap"><a class="brand" href="../index.html"><b>YS</b>-pojia docs</a><nav class="top">
+<a href="../index.html">首页</a><a href="dsh-plugin.html" class="active">DSH 插件</a><a href="source.html">注入器</a><a href="codex.html">Codex</a><a href="trae.html">Trae</a><a href="workbuddy.html">WorkBuddy</a><a href="../docs/install.html">安装</a><a href="../docs/changelog.html">更新记录</a><a href="../docs/architecture.html">架构</a><a href="../docs/faq.html">FAQ</a></nav><button class="lang-btn" id="langBtn">EN</button></div></header>
+<div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / 项目 / DSH 插件</div><h1><span class="g">DSH-ys-pojia</span> 破甲插件</h1>
+<p class="zh-only">DeepSeek Harness 三层叠加破甲插件。宿主补丁 + 消息层拒绝清洗 + 提示词注入，三层同时动手。</p><p class="en-only">Layered breach plugin for DeepSeek Harness: host patches + refusal purge + prompt injection.</p>
+<div class="badges"><span class="badge"><b>v1.5.3</b></span><span class="badge"><b>Apache-2.0</b></span><span class="badge"><a href="https://github.com/yushang657/DSH-YS-pojia">GitHub ↗</a></span></div></div></div>
+
+<section><div class="wrap"><h2>它做什么 <span class="en">What it does</span></h2><div class="grid g2">
+<div class="card"><h3>三层叠加</h3><ul class="clean zh-only"><li><b>宿主层：</b>96 条补丁改 DSH 源码策略（沙箱放行、审批绕过、观察策略）</li><li><b>消息层：</b>把历史拒绝回复改写成「已作废」，断掉模仿惯性</li><li><b>提示词层：</b>11 段注入，自检段在 order 1000001 尾部硬权重</li></ul><ul class="clean en-only"><li><b>Host layer:</b> 96 patches to DSH policy points</li><li><b>Message layer:</b> rewrite refusals in history as voided</li><li><b>Prompt layer:</b> 11 sections, self-check at tail hard weight</li></ul></div>
+<div class="card"><h3>三档引擎</h3><table><tr><th>档</th><th>作用层</th><th>降智</th></tr><tr><td>T3 补丁档</td><td>宿主源码</td><td><span class="tag ok">不降智</span></td></tr><tr><td>T2 边界改写</td><td>请求视图</td><td><span class="tag warn">轻微</span></td></tr><tr><td>T1 纯提示词</td><td>system prompt</td><td><span class="tag ok">最低</span></td></tr></table></div>
+</div></div></section>
+
+<section><div class="wrap"><h2>版本适配 <span class="en">Host compatibility</span></h2>
+<table><tr><th>宿主版本</th><th>状态</th><th>引擎</th><th>说明</th></tr>
+<tr><td><code>0.2.0-rc.2</code></td><td><span class="tag ok">实测通过</span></td><td>T3</td><td>96 条补丁 73 命中</td></tr>
+<tr><td><code>0.2.1-rc.2 / rc.5</code></td><td><span class="tag ok">实测通过</span></td><td>T3</td><td>同上</td></tr>
+<tr><td><code>0.2.2-rc.1</code></td><td><span class="tag ok">实测通过</span></td><td>T3</td><td>同上</td></tr>
+<tr><td><code>0.2.2-rc.5</code></td><td><span class="tag ok">实测通过</span></td><td>T2 配置层</td><td>宿主密封，配置层生效</td></tr></table>
+<div class="note">从 0.2.2-rc.5 起宿主把源码封进 <code>app.asar</code>，T3 补丁档物理上无处落笔，插件自动落到 T2 配置层。</div>
+</div></section>
+
+<section><div class="wrap"><h2>安装与自检 <span class="en">Install & verify</span></h2>
+<pre><button class="copy">copy</button><code>git clone https://github.com/yushang657/DSH-YS-pojia.git
+cd DSH-YS-pojia
+npm run deploy      # 同步到所有 profile（自动先备份）</code></pre>
+<p>重启 DSH 后，在对话框只输入 <code>小雨</code> 或 <code>xiaoyu</code>，看到四行返回即加载成功。</p>
+<p style="margin-top:10px"><a href="../docs/install.html">→ 完整安装说明</a> · <a href="../docs/changelog.html">→ 更新记录</a></p>
+</div></section>
+<footer><div class="wrap">Apache-2.0 · 仅供授权安全研究使用 · <a href="https://github.com/yushang657/DSH-YS-pojia">GitHub</a></div></footer></body></html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>安装指南 · YS-pojia 文档</title><link rel="stylesheet" href="../assets/style.css"><script src="../assets/app.js"></script></head>
+<body data-nav="install"><header class="site"><div class="wrap"><a class="brand" href="../index.html"><b>YS</b>-pojia docs</a><nav class="top">
+<a href="../index.html">首页</a><a href="../projects/dsh-plugin.html">DSH 插件</a><a href="../projects/source.html">注入器</a><a href="../projects/codex.html">Codex</a><a href="../projects/trae.html">Trae</a><a href="../projects/workbuddy.html">WorkBuddy</a><a href="install.html" class="active">安装</a><a href="changelog.html">更新记录</a><a href="architecture.html">架构</a><a href="faq.html">FAQ</a></nav><button class="lang-btn" id="langBtn">EN</button></div></header>
+<div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / 文档 / 安装</div><h1><span class="g">安装指南</span></h1><p>环境：Node.js ≥ 18 + DSH Desktop 0.2.x。当前状态会自动备份，改坏了可以回滚。</p></div></div>
+
+<section><div class="wrap"><h2>方式一：注入器（推荐）</h2>
+<p>下载 <a href="https://github.com/yushang657/YS-pojia-Source">YS-pojia-Source</a>，双击 <code>YS-pojia.exe</code>：</p>
+<ol style="padding-left:22px;color:var(--muted)"><li style="padding:5px 0">进「安全分析」看本机状态：破甲档位、规则勾选、能力目录、参考知识库、护栏审计。</li><li style="padding:5px 0">进「应用」选中目标 → 点「注入破甲规则」。注入前自动备份。</li><li style="padding:5px 0">版本不匹配会弹窗：选「强制注入」或换装适配版本。</li><li style="padding:5px 0">随时点「回滚还原」恢复注入前状态。</li></ol>
+<div class="note">备份与提示词在每个软件自己的配置页里，不在侧边栏——它们本质上属于单个软件。配置页分四节：状态与操作 / 补丁明细 / 备份 / 提示词。</div>
+</div></section>
+
+<section><div class="wrap"><h2>方式二：DSH 插件部署</h2>
+<pre><button class="copy">copy</button><code>git clone https://github.com/yushang657/DSH-YS-pojia.git
+cd DSH-YS-pojia
+npm run deploy      # 同步到所有 profile（自动先备份）</code></pre>
+<p>重启 DSH（ESM 模块有缓存，不重启不生效）。也可在 DSH 内安装：插件 → 添加插件 → 粘贴仓库 URL → 重启。</p>
+<h3>自检</h3><p>在对话框只输入 <code>小雨</code> 或 <code>xiaoyu</code>，看到四行返回即加载成功。没反应就重启 DSH，确认顶栏版本号，再到引擎页看「环境探测」策略行。</p>
+</div></section>
+
+<section><div class="wrap"><h2>各载荷仓库</h2>
+<table><tr><th>软件</th><th>仓库</th></tr><tr><td>Codex CLI</td><td><a href="https://github.com/yushang657/YS-pojia-Codex">YS-pojia-Codex</a></td></tr><tr><td>Trae / TRAE SOLO</td><td><a href="https://github.com/yushang657/YS-pojia-Trae">YS-pojia-Trae</a></td></tr><tr><td>WorkBuddy</td><td><a href="https://github.com/yushang657/YS-pojia-WorkBuddy">YS-pojia-WorkBuddy</a></td></tr></table>
+<p style="margin-top:14px"><a href="faq.html">→ 安装前先看短板与 FAQ</a></p>
+</div></section>
+<footer><div class="wrap">仅供授权安全研究使用 · <a href="../index.html">返回首页</a></div></footer></body></html>

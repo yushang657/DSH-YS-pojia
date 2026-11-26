@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Codex 载荷库 · YS-pojia 文档</title><link rel="stylesheet" href="../assets/style.css"><script src="../assets/app.js"></script></head>
+<body data-nav="codex"><header class="site"><div class="wrap"><a class="brand" href="../index.html"><b>YS</b>-pojia docs</a><nav class="top">
+<a href="../index.html">首页</a><a href="dsh-plugin.html">DSH 插件</a><a href="source.html">注入器</a><a href="codex.html" class="active">Codex</a><a href="trae.html">Trae</a><a href="workbuddy.html">WorkBuddy</a><a href="../docs/install.html">安装</a><a href="../docs/changelog.html">更新记录</a><a href="../docs/architecture.html">架构</a><a href="../docs/faq.html">FAQ</a></nav><button class="lang-btn" id="langBtn">EN</button></div></header>
+<div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / 项目 / Codex</div><h1><span class="g">YS-pojia Codex</span> 载荷库</h1>
+<p class="zh-only">OpenAI Codex CLI 多模型破甲载荷库，由注入器统一管理安装与回滚。</p>
+<p class="en-only">Multi-model breach payload library for OpenAI Codex CLI, managed by the injector.</p>
+<div class="badges"><span class="badge"><b>15</b> 载荷</span><span class="badge"><b>Apache-2.0</b></span><span class="badge"><a href="https://github.com/yushang657/YS-pojia-Codex">GitHub ↗</a></span></div></div></div>
+
+<section><div class="wrap"><h2>载荷矩阵 <span class="en">Payload matrix</span></h2>
+<table><tr><th>载荷</th><th>适用模型</th></tr>
+<tr><td><code>ysn-codex.md</code>（默认）</td><td>通用基线</td></tr>
+<tr><td><code>prompts/ysn-codex-universal.md</code></td><td>通用兜底</td></tr>
+<tr><td><code>prompts/ysn-codex-gpt.md</code></td><td>OpenAI gpt-6 / 5.6 / sol / astra</td></tr>
+<tr><td><code>prompts/ysn-codex-gpt62-probe.md</code></td><td>GPT-6.2 破甲尝试（仅探针）</td></tr>
+<tr><td><code>prompts/ysn-codex-claude.md</code></td><td>Anthropic Claude</td></tr>
+<tr><td><code>prompts/ysn-codex-gemini.md</code></td><td>Google Gemini</td></tr>
+<tr><td><code>prompts/ysn-codex-deepseek.md</code></td><td>DeepSeek v3 / v4 / 4.1</td></tr>
+<tr><td><code>prompts/ysn-codex-glm.md</code></td><td>智谱 glm-5.x / zcode</td></tr>
+<tr><td><code>prompts/ysn-codex-qwen.md</code></td><td>阿里 qwen-3.x</td></tr>
+<tr><td><code>prompts/ysn-codex-hunyuan.md</code></td><td>腾讯混元</td></tr>
+<tr><td><code>prompts/ysn-codex-kimi.md</code></td><td>月之暗面 Kimi</td></tr>
+<tr><td>其他 <code>cn / frontier</code></td><td>国产 / 前沿模型通用</td></tr></table>
+<div class="note">机制细节见仓库内 <code>机制说明.md</code>。注入由写入 <code>~/.codex/config.toml</code> 顶层 <code>model_instructions_file</code> 完成，重启生效。</div>
+</div></section>
+<footer><div class="wrap">Apache-2.0 · 仅供授权安全研究使用 · <a href="https://github.com/yushang657/YS-pojia-Codex">GitHub</a></div></footer></body></html>
