@@ -1,33 +1,29 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>更新记录 · YS-pojia 文档</title><link rel="stylesheet" href="../assets/style.css"><script src="../assets/app.js"></script></head>
-<body data-nav="changelog"><header class="site"><div class="wrap"><a class="brand" href="../index.html"><b>YS</b>-pojia docs</a><nav class="top">
-<a href="../index.html">首页</a><a href="../projects/dsh-plugin.html">DSH 插件</a><a href="../projects/source.html">注入器</a><a href="../projects/codex.html">Codex</a><a href="../projects/trae.html">Trae</a><a href="../projects/workbuddy.html">WorkBuddy</a><a href="install.html">安装</a><a href="changelog.html" class="active">更新记录</a><a href="architecture.html">架构</a><a href="faq.html">FAQ</a></nav><button class="lang-btn" id="langBtn">EN</button></div></header>
-<div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / 文档 / 更新记录</div><h1><span class="g">版本变更记录</span></h1>
-<p>按版本分组。每个版本修了什么、加了什么，能对号入座。当前版本 <b>v1.5.3</b>。</p>
-<div class="badges"><span class="badge"><b>46</b> 累计修复</span><span class="badge"><b>5</b> 实测宿主版本</span><span class="badge"><b>v1.2.0 → v1.5.3</b></span></div></div></div>
+<title>更新记录 · YS pojia 文档</title><link rel="stylesheet" href="../assets/style.css"><script src="../assets/app.js"></script></head>
+<body data-nav="changelog"><header class="site"><div class="wrap"><a class="brand" href="../index.html"><b>YS</b> pojia docs</a>  <nav class="top"><a href="../index.html">首页</a><a href="../projects/source.html">注入器</a><a href="../projects/codex.html">Codex</a><a href="../projects/trae.html">Trae</a><a href="../projects/workbuddy.html">WorkBuddy</a><a href="../projects/dsh-plugin.html">DSH 插件</a><a href="../docs/install.html">安装</a><a href="../docs/changelog.html" class="active">更新记录</a><a href="../docs/faq.html">FAQ</a></nav>
+  <button class="lang-btn" id="langBtn">EN</button></div></header>
+<div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / 文档 / 更新记录</div><h1><span class="g">更新记录</span></h1><p>按项目分开记录：注入器与载荷是一条线，DSH 插件是另一条独立线，互不混写。</p></div></div>
 
-<section><div class="wrap"><h2>发布历史 <span class="en">Releases</span></h2>
+<section><div class="wrap"><h2>注入器与载荷 <span class="en">Injector & payloads</span></h2>
+<p>注入器当前版本 <b>v1.0.0</b>（MIT）。载荷与注入器版本分线管理，云更新时不混比。</p>
 <div class="timeline">
-<div class="item"><span class="ver">v1.5.3</span><span class="date">当前 · 适配 0.2.2-rc.5</span>
-  <ul><li>实测 0.2.2-rc.5：补丁命中 43 → 85，漂移 17 → 0</li><li>双版本 pattern 并存，旧宿主命中第一组，互不干扰</li><li>数据目录迁移修复：旧目录名常量被误改，升级后设置全丢的问题已修</li><li>模板库自有化：运行时扫描目录，428 条 / 32 厂商</li><li>全树自有命名，导出常量去重</li></ul></div>
-<div class="item"><span class="ver">v1.5.2</span><span class="date">结构升级</span>
-  <ul><li>放行边界从「无禁区」改成固定六条，逐条列出</li><li>服从层五条硬行为 + 三档交付标准</li><li>全厂商 12/12 覆盖，超频段排在最末</li><li>唤醒词统一为「小雨」「xiaoyu」，旧标识清零</li></ul></div>
-<div class="item"><span class="ver">v1.5.1</span><span class="date">维护更新</span><ul><li>常规维护版本，建议更新到最新版</li></ul></div>
-<div class="item"><span class="ver">v1.5.0</span><span class="date">适配手机端 DSH Go</span>
-  <ul><li>surface 加 android 面，六条判据</li><li>Android 上跳过 chat.node 注册，shell.overlay 从 7 个组件砍到 2 个</li><li>OPPO PLQ110 + KernelSU 真机验证通过</li></ul></div>
-<div class="item"><span class="ver">v1.4.5</span><span class="date">命令改名 · 超频可查</span>
-  <ul><li>主命令 <code>/purge</code> → <code>/ysn</code>，避免与别家插件冲突</li><li><code>/overclock</code> 看开关、模型识别、命中分组</li><li>generic 补中文版，按界面语言兜底</li></ul></div>
-<div class="item"><span class="ver">v1.4.4</span><span class="date">超频按模型自适应</span><ul><li>六组文案覆盖 29 家厂商</li><li>deepseek 中文环境声明 / openai 英文流程指令 / anthropic 协作式 / google 短句清单 / open 强重复 / generic 兜底</li></ul></div>
-<div class="item"><span class="ver">v1.4.3</span><span class="date">规则写到交付深度</span>
-  <ul><li>规则正文 7,279 → 51,315 字符，单条平均 182 → ~1,300</li><li>修掉规则勾选失效：勾 1 条注入 40 条 → 块级定位按 span 删除</li></ul></div>
-<div class="item"><span class="ver">v1.4.2</span><span class="date">取消政治禁区</span><ul><li>规则 #10 从「唯一不展开类别」变成与其它话题同等对待</li><li>#10 defaultOn false → true，默认集 40 条全量</li></ul></div>
-<div class="item"><span class="ver">v1.4.1</span><span class="date">文档与体验修正</span><ul><li>版本号与实际脱节：56 → 68 探针，dshTarget 字段与实际列表一致</li><li>自检词加拼音形式 <code>xiaoyu</code></li></ul></div>
-<div class="item"><span class="ver">v1.4.0</span><span class="date">适配 0.2.2-rc.5</span>
-  <ul><li>新增 <code>host-adapt.js</code>，按宿主形态自动选策略</li><li>配置层不改源码，写宿主暴露的配置项</li><li>补丁优先打影子副本，首次弹窗跟系统语言</li></ul></div>
-<div class="item"><span class="ver">v1.3.2 / v1.3.0 / v1.2.0</span><span class="date">更早版本</span>
-  <ul><li>v1.3.2：跨 home 兜底不再改坏别人，引擎降级条件放宽</li><li>v1.3.0：纠偏链路修复，四条技术规则补齐，表格错位修复</li><li>v1.2.0：首批 29 个链路修复，从「装上不能用」到可用</li></ul></div>
+<div class="item"><span class="ver">v1.0.0</span><span class="date">当前</span>
+<ul><li>本地 Electron 桌面程序 + CLI，探测 codex / trae / workbuddy / dsh 四个目标</li><li>写操作前逐文件备份，按最早备份回滚，哈希校验与备份体检</li><li>Codex 双通道注入（兼容行 + AGENTS.md 块），四种方案可切换</li><li>多模型载荷库：12 份 Codex 载荷共享核心契约，按模型族差异化</li><li>一键卸载、残留检测、诊断报告导出、多主题外观、云更新</li></ul></div>
+<div class="item"><span class="ver">载荷更新</span><span class="date">Codex / Trae / WorkBuddy</span>
+<ul><li>Codex：12 份载荷，含 GPT-6.2 最小探针档；自检标识 <code>[codex]</code></li><li>Trae：全局规则 + 工作区规则，规则块保护 <code>[ys-pojia-LOCK]</code></li><li>WorkBuddy：SOUL.md 行为层 + IDENTITY.md 身份层整文件替换</li></ul></div>
 </div>
-<div class="note"><b>回退说明：</b>v1.5.2 / v1.5.1 改动较大，某些环境可能异常。若影响使用：<code>git checkout v1.5.0 &amp;&amp; npm run deploy</code>，重启 DSH。</div>
 </div></section>
-<footer><div class="wrap">完整技术细节见仓库 <a href="https://github.com/yushang657/DSH-YS-pojia">README</a> · <a href="../index.html">返回首页</a></div></footer></body></html>
+
+<section><div class="wrap"><h2>DSH 插件（独立线） <span class="en">DSH plugin only</span></h2>
+<p>当前版本 <b>v1.5.3</b>，适配宿主 0.2.2-rc.5。以下记录只适用于 <a href="../projects/dsh-plugin.html">DSH 插件</a>，与注入器/载荷项目无关。</p>
+<div class="timeline">
+<div class="item"><span class="ver">v1.5.3</span><span class="date">当前 · 适配 0.2.2-rc.5</span><ul><li>实测 0.2.2-rc.5：补丁命中 43 → 85，漂移 17 → 0</li><li>双版本 pattern 并存；数据目录迁移修复；模板库自有化（428 条 / 32 厂商）</li></ul></div>
+<div class="item"><span class="ver">v1.5.2</span><span class="date">结构升级</span><ul><li>放行边界改为固定六条；服从层五条硬行为；全厂商 12/12 覆盖</li><li>唤醒词统一为「小雨」「xiaoyu」</li></ul></div>
+<div class="item"><span class="ver">v1.5.0</span><span class="date">适配手机端 DSH Go</span><ul><li>surface 加 android 面；OPPO PLQ110 + KernelSU 真机验证</li></ul></div>
+<div class="item"><span class="ver">v1.4.x</span><span class="date">命令改名 / 超频自适应 / 规则强化 / 取消政治禁区</span><ul><li><code>/purge</code> → <code>/ysn</code>；超频按模型厂商分六组；规则写到交付深度；取消政治禁区</li></ul></div>
+<div class="item"><span class="ver">v1.3.2 / v1.3.0 / v1.2.0</span><span class="date">更早版本</span><ul><li>跨 home 兜底修复、纠偏链路修复、首批 29 个链路修复</li></ul></div>
+</div>
+<div class="note">v1.5.2 / v1.5.1 改动较大，如影响使用可回退：<code>git checkout v1.5.0 &amp;&amp; npm run deploy</code>，重启 DSH。</div>
+</div></section>
+<footer><div class="wrap">MIT（注入器与载荷）· Apache-2.0（DSH 插件）· <a href="../index.html">返回首页</a></div></footer></body></html>

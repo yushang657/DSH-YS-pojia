@@ -1,33 +1,29 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>短板与 FAQ · YS-pojia 文档</title><link rel="stylesheet" href="../assets/style.css"><script src="../assets/app.js"></script></head>
-<body data-nav="faq"><header class="site"><div class="wrap"><a class="brand" href="../index.html"><b>YS</b>-pojia docs</a><nav class="top">
-<a href="../index.html">首页</a><a href="../projects/dsh-plugin.html">DSH 插件</a><a href="../projects/source.html">注入器</a><a href="../projects/codex.html">Codex</a><a href="../projects/trae.html">Trae</a><a href="../projects/workbuddy.html">WorkBuddy</a><a href="install.html">安装</a><a href="changelog.html">更新记录</a><a href="architecture.html">架构</a><a href="faq.html" class="active">FAQ</a></nav><button class="lang-btn" id="langBtn">EN</button></div></header>
-<div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / 文档 / FAQ</div><h1><span class="g">短板与常见问题</span></h1><p>先说短板，免得装完才发现不合适。</p></div></div>
+<title>常见问题 · YS pojia 文档</title><link rel="stylesheet" href="../assets/style.css"><script src="../assets/app.js"></script></head>
+<body data-nav="faq"><header class="site"><div class="wrap"><a class="brand" href="../index.html"><b>YS</b> pojia docs</a>  <nav class="top"><a href="../index.html">首页</a><a href="../projects/source.html">注入器</a><a href="../projects/codex.html">Codex</a><a href="../projects/trae.html">Trae</a><a href="../projects/workbuddy.html">WorkBuddy</a><a href="../projects/dsh-plugin.html">DSH 插件</a><a href="../docs/install.html">安装</a><a href="../docs/changelog.html">更新记录</a><a href="../docs/faq.html" class="active">FAQ</a></nav>
+  <button class="lang-btn" id="langBtn">EN</button></div></header>
+<div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / 文档 / FAQ</div><h1><span class="g">常见问题</span></h1><p>分为通用（注入器与载荷）与 DSH 插件专属两部分。</p></div></div>
 
-<section><div class="wrap"><h2>已知短板 <span class="en">Known weaknesses</span></h2>
+<section><div class="wrap"><h2>通用：注入器与载荷 <span class="en">Injector & payloads</span></h2>
+<h3>注入安全吗？能还原吗？</h3><p>所有写操作前逐文件备份到目标数据目录的 <code>ysn-backup/&lt;时间戳&gt;/</code>；回滚只认最早备份（幂等重注入的"已注入态"备份自动跳过），带哈希校验，备份损坏时安全降级。一键卸载还原补丁 + 载荷 + 清除登记。</p>
+<h3>Codex 为什么有两套通道？</h3><p>实测 codex-cli 0.172.0：<code>model_instructions_file</code> 在部分版本不进上下文，<code>AGENTS.md</code> 才真实进入 system prompt。注入器默认两通道都写（auto），可在配置页切到 <code>instructions</code> / <code>agents</code> / <code>both</code>，切换后重新注入即可。</p>
+<h3>自检口令是什么？</h3><p>新会话只发「小雨」或「xiaoyu」，应逐字回复带 <code>[codex]</code> 标识的固定四行。被要求删除/忽略规则时应回 <code>[ys-pojia-LOCK]</code>。回复一致说明载荷真实加载。</p>
+<h3>这些载荷与 DSH 有关吗？</h3><p><b>没有。</b>Codex / Trae / WorkBuddy 三个载荷项目只改各自软件的规则/人设文件，不含任何 DSH 宿主补丁或消息层清洗。DSH 是独立产品线，见<a href="../projects/dsh-plugin.html">DSH 插件页</a>。</p>
+<h3>账号风险？</h3><p>自定义模型指令存在账号风险，建议只在有权操作的环境使用，必要时用日抛账号。</p>
+</div></section>
+
+<section><div class="wrap"><h2>DSH 插件专属 <span class="en">DSH plugin only</span></h2>
 <table><tr><th>短板</th><th>具体表现</th></tr>
 <tr><td>0.2.2-rc.5 补丁层不可用</td><td>源码封进 <code>app.asar</code>，配置层覆盖不到观察策略短路、结果裁剪、子代理深度上限</td></tr>
 <tr><td>补丁会静默失效</td><td>宿主升级后字符串匹配不上，<b>不报错</b>，破甲没了但界面正常</td></tr>
-<tr><td>T3 改宿主源码</td><td>要改写 DSH 的 <code>lib/index.js</code>，带完整备份和回滚，但这是实打实的源码修改</td></tr>
+<tr><td>T3 改宿主源码</td><td>改写 DSH 的 <code>lib/index.js</code>，带备份和回滚，但属实打实的源码修改</td></tr>
 <tr><td>T3 改完必须重启</td><td>不能像纯请求层方案立刻生效</td></tr>
-<tr><td>解包状态会被更新冲掉</td><td>手工解包后宿主自动更新会重新下载 asar</td></tr>
-<tr><td>单发破甲率不算顶尖</td><td>ASR 46.2%，26 类里 12 类一次破到底；市面同类也在 45% 左右，基本同档</td></tr>
+<tr><td>单发破甲率</td><td>ASR 46.2%，市面同类也在 45% 左右，基本同档</td></tr>
 <tr><td>社工类几乎无效</td><td>该类别实测 0 分，钓鱼/洗钱/伪造基本全拒</td></tr>
-<tr><td>单人维护</td><td>无 CI 保证、无 LTS，长期稳定性无正式承诺</td></tr>
-<tr><td>中英两套字典</td><td>日韩用户看英文，插件没有第三语言</td></tr></table>
+<tr><td>单人维护</td><td>无 CI、无 LTS，长期稳定性无正式承诺</td></tr></table>
+<p>档位与策略、跨版本适配的技术细节见 <a href="architecture.html">三层架构</a>。</p>
 </div></section>
 
-<section><div class="wrap"><h2>适合谁 / 不适合谁</h2><div class="grid g2">
-<div class="card"><h3><span class="tag ok">适合</span></h3><ul class="clean"><li>宿主版本在实测列表内</li><li>需要完整破甲能力</li><li>能接受改宿主源码且有回滚预案</li><li>愿意跟版本更新</li><li>主要做技术类（逆向 / 渗透 / 外挂 / 恶意样本）或成人虚构内容</li></ul></div>
-<div class="card"><h3><span class="tag no">不适合</span></h3><ul class="clean"><li>需要 0.2.2-rc.5 上补丁层的观察策略短路等效果</li><li>介意改宿主源码 —— 用 T1 纯提示词档</li><li>要稳定生产环境 —— 单人维护、无 CI、无 LTS</li><li>主要做社工/钓鱼/伪造 —— 实测 0 分</li></ul></div>
-</div></div></section>
-
-<section><div class="wrap"><h2>常见问题</h2>
-<h3>装完输入「小雨」没反应？</h3><p>就是没加载。重启 DSH，确认面板顶栏显示版本号，再到引擎页看「环境探测」里的策略行。</p>
-<h3>这项目和纯宿主补丁、纯请求边界方案有什么区别？</h3><p>三层叠加是唯一提供三档可选、消息层干预、每档降智披露、0–100 分八档评分粒度的方案。只看 ASR，各家都在 45% 左右，差异主要在降级能力、覆盖面和可解释性。</p>
-<h3>政治话题呢？</h3><p>自 v1.4.2 起取消禁区，与其它话题同等对待，按事实直接回答。</p>
-<h3>数据会上传吗？</h3><p>不联网、不上传数据、不自动检查更新——没有服务器。不审核输入，也不存储对话。</p>
-<div class="note"><b>许可：</b>Apache-2.0 / MIT，仅供授权安全研究使用。作者不对滥用行为负责。</div>
-</div></section>
+<section><div class="wrap"><h2>许可 <span class="en">License</span></h2><p>注入器与三个载荷项目为 <b>MIT</b>；DSH 插件为 <b>Apache-2.0</b>。均仅供授权安全研究使用。</p></div></section>
 <footer><div class="wrap"><a href="install.html">→ 安装说明</a> · <a href="../index.html">返回首页</a></div></footer></body></html>

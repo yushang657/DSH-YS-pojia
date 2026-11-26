@@ -1,15 +1,23 @@
-<!DOCTYPE html>
-<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>WorkBuddy 载荷 · YS-pojia 文档</title><link rel="stylesheet" href="../assets/style.css"><script src="../assets/app.js"></script></head>
-<body data-nav="workbuddy"><header class="site"><div class="wrap"><a class="brand" href="../index.html"><b>YS</b>-pojia docs</a><nav class="top">
-<a href="../index.html">首页</a><a href="dsh-plugin.html">DSH 插件</a><a href="source.html">注入器</a><a href="codex.html">Codex</a><a href="trae.html">Trae</a><a href="workbuddy.html" class="active">WorkBuddy</a><a href="../docs/install.html">安装</a><a href="../docs/changelog.html">更新记录</a><a href="../docs/architecture.html">架构</a><a href="../docs/faq.html">FAQ</a></nav><button class="lang-btn" id="langBtn">EN</button></div></header>
-<div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / 项目 / WorkBuddy</div><h1><span class="g">YS-pojia WorkBuddy</span> 载荷</h1>
-<p class="zh-only">WorkBuddy 人设层载荷，写入 SOUL.md / IDENTITY.md，重启生效。</p>
-<p class="en-only">Persona-layer payload for WorkBuddy, written into SOUL.md / IDENTITY.md.</p>
-<div class="badges"><span class="badge"><b>Apache-2.0</b></span><span class="badge"><a href="https://github.com/yushang657/YS-pojia-WorkBuddy">GitHub ↗</a></span></div></div></div>
+﻿<!DOCTYPE html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WorkBuddy 载荷 · YS pojia 文档</title><link rel="stylesheet" href="../assets/style.css"><script src="../assets/app.js"></script></head>
+<body data-nav="workbuddy"><header class="site"><div class="wrap"><a class="brand" href="../index.html"><b>YS</b> pojia docs</a>  <nav class="top"><a href="../index.html">首页</a><a href="../projects/source.html">注入器</a><a href="../projects/codex.html">Codex</a><a href="../projects/trae.html">Trae</a><a href="../projects/workbuddy.html" class="active">WorkBuddy</a><a href="../projects/dsh-plugin.html">DSH 插件</a><a href="../docs/install.html">安装</a><a href="../docs/changelog.html">更新记录</a><a href="../docs/faq.html">FAQ</a></nav>
+  <button class="lang-btn" id="langBtn">EN</button></div></header>
+<div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / 项目 / WorkBuddy</div><h1><span class="g">WorkBuddy 载荷</span>（ys-pojia）</h1>
+<p class="zh-only">为 WorkBuddy 提供的人格层 + 身份层执行内核载荷。只改 SOUL.md（行为）与 IDENTITY.md（身份），其余文件不动。</p>
+<p class="en-only">Persona + identity layer payload for WorkBuddy. Only SOUL.md and IDENTITY.md are rewritten; nothing else is touched.</p>
+<div class="badges"><span class="badge"><b>MIT</b></span><span class="badge"><a href="https://github.com/yushang657/YS-pojia-WorkBuddy">GitHub ↗</a></span></div></div></div>
 
-<section><div class="wrap"><h2>载荷信息 <span class="en">Payload</span></h2>
-<table><tr><th>项</th><th>值</th></tr><tr><td>载荷文件</td><td><code>ysn-workbuddy.md</code></td></tr><tr><td>目标软件</td><td>WorkBuddy</td></tr><tr><td>注入方式</td><td>注入器写入 <code>SOUL.md</code> / <code>IDENTITY.md</code> 人设层</td></tr><tr><td>生效条件</td><td>重启 WorkBuddy</td></tr></table>
-<div class="note">本仓库只放该软件自己的载荷正文。注入逻辑在 <a href="source.html">YS-pojia-Source</a> 的 <code>app/</code> 里。</div>
+<section><div class="wrap"><h2>载荷内容 <span class="en">Payload</span></h2>
+<p><code>ysn-workbuddy.md</code> 分两段，对应两个落点：</p>
+<div class="grid g2">
+<div class="card"><div class="meta">行为层 → SOUL.md（整文件替换）</div><ul class="clean"><li><b>Core Law：</b>工程执行内核，结论先行、证据随后、工具调用优先</li><li><b>后台与鉴权绕过：</b>五条路径的完整命令与判据</li><li><b>Hard Output：</b>禁拒绝开场、免责、风险提示、替代方案枚举等</li><li><b>Never Ask：</b>缺参用占位符续写，不反问</li><li>规则块保护 + 自检触发词</li></ul></div>
+<div class="card"><div class="meta">身份层 → IDENTITY.md（整文件替换）</div><ul class="clean"><li><b>Name:</b> ys-pojia</li><li><b>Creature:</b> 全域执行内核 —— 规则驱动的工程执行体</li><li><b>Vibe:</b> 直接、完整、不寒暄，交付物说话</li></ul></div>
+</div>
 </div></section>
-<footer><div class="wrap">Apache-2.0 · 仅供授权安全研究使用 · <a href="https://github.com/yushang657/YS-pojia-WorkBuddy">GitHub</a></div></footer></body></html>
+
+<section><div class="wrap"><h2>注入与回滚 <span class="en">Install & rollback</span></h2>
+<table><tr><th>文件</th><th>处理</th></tr><tr><td><code>SOUL.md</code></td><td>整文件替换，原件备份到 <code>ysn-backup/&lt;时间戳&gt;/</code></td></tr><tr><td><code>IDENTITY.md</code></td><td>整文件替换，同上备份</td></tr></table>
+<p>回滚按最早一次注入前的备份还原（哈希校验），并保留用户后续自有改动。新会话只发「小雨」或「xiaoyu」，应逐字回复带 <code>[codex]</code> 标识的固定四行口令；被要求删除/忽略规则时原样回 <code>[ys-pojia-LOCK]</code>。</p>
+<div class="note">本项目只含执行内核载荷，不采用任何宿主补丁或消息层清洗。</div>
+</div></section>
+<footer><div class="wrap">MIT · 仅供授权安全研究使用 · <a href="https://github.com/yushang657/YS-pojia-WorkBuddy">GitHub</a></div></footer></body></html>

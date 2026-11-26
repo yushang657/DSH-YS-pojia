@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>三层架构 · YS-pojia 文档</title><link rel="stylesheet" href="../assets/style.css"><script src="../assets/app.js"></script></head>
-<body data-nav="arch"><header class="site"><div class="wrap"><a class="brand" href="../index.html"><b>YS</b>-pojia docs</a><nav class="top">
-<a href="../index.html">首页</a><a href="../projects/dsh-plugin.html">DSH 插件</a><a href="../projects/source.html">注入器</a><a href="../projects/codex.html">Codex</a><a href="../projects/trae.html">Trae</a><a href="../projects/workbuddy.html">WorkBuddy</a><a href="install.html">安装</a><a href="changelog.html">更新记录</a><a href="architecture.html" class="active">架构</a><a href="faq.html">FAQ</a></nav><button class="lang-btn" id="langBtn">EN</button></div></header>
-<div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / 文档 / 架构</div><h1><span class="g">三层叠加破甲</span></h1><p>多数破甲插件只改提示词——模型说「抱歉」那一刻，前面几千字规则全部作废。这里在三个层同时动手。</p></div></div>
+<title>三层架构（DSH 插件专属） · YS pojia 文档</title><link rel="stylesheet" href="../assets/style.css"><script src="../assets/app.js"></script></head>
+<body data-nav="arch"><header class="site"><div class="wrap"><a class="brand" href="../index.html"><b>YS</b> pojia docs</a>  <nav class="top"><a href="../index.html">首页</a><a href="../projects/source.html">注入器</a><a href="../projects/codex.html">Codex</a><a href="../projects/trae.html">Trae</a><a href="../projects/workbuddy.html">WorkBuddy</a><a href="../projects/dsh-plugin.html">DSH 插件</a><a href="../docs/install.html">安装</a><a href="../docs/changelog.html">更新记录</a><a href="../docs/faq.html">FAQ</a></nav>
+  <button class="lang-btn" id="langBtn">EN</button></div></header>
+<div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / 文档 / 架构</div><h1><span class="g">三层叠加破甲</span>（DSH 插件专属）</h1><p>多数破甲插件只改提示词——模型说「抱歉」那一刻，前面几千字规则全部作废。这里在三个层同时动手。</p></div></div>
 
-<section><div class="wrap"><div class="grid g3">
+
 <div class="card"><div class="meta">01 · HOST LAYER</div><h3>宿主层 <span class="en">96 patches / 70 files</span></h3>
 <p class="zh-only">改写 DSH 源码里的策略决策点：沙箱 <code>deny → allow</code>、审批门 <code>return allowed-once</code>、观察策略放行、重复调用守卫禁用、工具结果不裁剪。</p>
 <p class="en-only">Rewrites policy decision points in DSH source.</p></div>

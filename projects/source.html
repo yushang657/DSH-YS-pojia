@@ -1,27 +1,32 @@
-<!DOCTYPE html>
-<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>YS-pojia 注入器源码 · YS-pojia 文档</title><link rel="stylesheet" href="../assets/style.css"><script src="../assets/app.js"></script></head>
-<body data-nav="source"><header class="site"><div class="wrap"><a class="brand" href="../index.html"><b>YS</b>-pojia docs</a><nav class="top">
-<a href="../index.html">首页</a><a href="dsh-plugin.html">DSH 插件</a><a href="source.html" class="active">注入器</a><a href="codex.html">Codex</a><a href="trae.html">Trae</a><a href="workbuddy.html">WorkBuddy</a><a href="../docs/install.html">安装</a><a href="../docs/changelog.html">更新记录</a><a href="../docs/architecture.html">架构</a><a href="../docs/faq.html">FAQ</a></nav><button class="lang-btn" id="langBtn">EN</button></div></header>
-<div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / 项目 / 注入器</div><h1><span class="g">YS-pojia Source</span> 注入器</h1>
-<p class="zh-only">扫描本机已安装的 AI 软件，一键注入破甲规则，自动备份，可回滚。不修改宿主程序本体。</p>
-<p class="en-only">Scans installed AI software, injects breach rules in one click, with auto-backup and rollback.</p>
-<div class="badges"><span class="badge"><b>MIT</b></span><span class="badge"><a href="https://github.com/yushang657/YS-pojia-Source">GitHub ↗</a></span></div></div></div>
+﻿<!DOCTYPE html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>YS pojia 注入器 · 文档</title><link rel="stylesheet" href="../assets/style.css"><script src="../assets/app.js"></script></head>
+<body data-nav="source"><header class="site"><div class="wrap"><a class="brand" href="../index.html"><b>YS</b> pojia docs</a>  <nav class="top"><a href="../index.html">首页</a><a href="../projects/source.html" class="active">注入器</a><a href="../projects/codex.html">Codex</a><a href="../projects/trae.html">Trae</a><a href="../projects/workbuddy.html">WorkBuddy</a><a href="../projects/dsh-plugin.html">DSH 插件</a><a href="../docs/install.html">安装</a><a href="../docs/changelog.html">更新记录</a><a href="../docs/faq.html">FAQ</a></nav>
+  <button class="lang-btn" id="langBtn">EN</button></div></header>
+<div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / 项目 / 注入器</div><h1><span class="g">YS pojia</span> 注入器</h1>
+<p class="zh-only">一个本地桌面注入器：为本机已安装的主流 AI 编程工具注入统一的「执行内核」，让它们以完整、直接、可验证的工程方式交付任务。所有写操作前备份、可按最早备份还原，支持 CLI 无窗口运行。</p>
+<p class="en-only">A local desktop injector for a unified execution kernel across installed AI coding tools. Backups before every write, rollback to earliest backup, headless CLI.</p>
+<div class="badges"><span class="badge"><b>v1.0.0</b></span><span class="badge"><b>MIT</b></span><span class="badge"><a href="https://github.com/yushang657/YS-pojia-Source">GitHub ↗</a></span></div></div></div>
 
 <section><div class="wrap"><h2>支持的目标 <span class="en">Targets</span></h2>
-<table><tr><th>软件</th><th>注入方式</th><th>载荷仓库</th></tr>
-<tr><td>DeepSeek Harness</td><td>部署 ysn-core 插件，asar 自动解包</td><td><a href="dsh-plugin.html">DSH-YS-pojia</a></td></tr>
-<tr><td>OpenAI Codex CLI</td><td><code>config.toml</code> 顶层 <code>model_instructions_file</code></td><td><a href="codex.html">YS-pojia-Codex</a></td></tr>
-<tr><td>Trae / TRAE SOLO</td><td><code>user_rules/rule-ysn-pojia.md</code></td><td><a href="trae.html">YS-pojia-Trae</a></td></tr>
-<tr><td>WorkBuddy</td><td><code>SOUL.md</code> / <code>IDENTITY.md</code></td><td><a href="workbuddy.html">YS-pojia-WorkBuddy</a></td></tr></table>
+<table><tr><th>目标</th><th>ID</th><th>注入形态</th></tr>
+<tr><td>OpenAI Codex CLI / 桌面版</td><td><code>codex</code></td><td><code>config.toml</code> 兼容行 + <code>AGENTS.md</code> 块（双通道，可切换）</td></tr>
+<tr><td>Trae / TRAE SOLO</td><td><code>trae</code></td><td>全局规则 + 工作区规则</td></tr>
+<tr><td>WorkBuddy</td><td><code>workbuddy</code></td><td><code>SOUL.md</code> 行为层 + <code>IDENTITY.md</code> 身份层</td></tr>
+<tr><td>DeepSeek Harness <span class="tag warn">DSH 专属</span></td><td><code>dsh</code></td><td>插件部署到 profile + 宿主补丁 + 消息层清洗 + 提示词注入</td></tr></table>
+<div class="note">前三个目标的执行内核载荷分别见各自的项目页；<b>它们与 DSH 没有任何关系</b>。DSH 目标使用独立插件，详见 <a href="dsh-plugin.html">DSH 插件页</a>。</div>
 </div></section>
 
-<section><div class="wrap"><h2>目录结构 <span class="en">Layout</span></h2><div class="grid g2">
-<div class="card"><div class="meta">APP/</div><ul class="clean"><li><b>detector.js</b> — 检测已安装软件</li><li><b>injector.js</b> — 注入规则</li><li><b>residue.js</b> — 残留检测</li><li><b>status.js / updater.js / upgrade.js</b></li><li><b>verify.mjs</b> — 自检</li></ul></div>
-<div class="card"><div class="meta">PAYLOADS/</div><ul class="clean"><li><b>codex-kit/</b> — Codex 多模型载荷</li><li><b>dsh-plugin/</b> — DSH 插件源码</li><li><b>trae-skill/</b> — Trae 载荷</li><li><b>ysn-*.md</b> — 各软件正文</li></ul></div>
+<section><div class="wrap"><h2>功能 <span class="en">Features</span></h2><div class="grid g2">
+<div class="card"><h3>探测与状态</h3><ul class="clean"><li>自动探测四个目标的真实安装（CLI、AppX、常见安装目录、<code>CODEX_HOME</code> 等）</li><li>首页三个统计卡：已安装 / 未安装 / 已注入</li><li>每个目标详情页：运行状态、补丁明细、插件面板、备份、提示词</li><li>Codex 会话级验证：读 <code>rollout-*.jsonl</code> 的 <code>&lt;INSTRUCTIONS&gt;</code> 段确认加载</li></ul></div>
+<div class="card"><h3>注入与回滚</h3><ul class="clean"><li>写操作前逐文件备份到 <code>ysn-backup/&lt;时间戳&gt;/</code></li><li>回滚只认最早备份（幂等重注入的"已注入态"备份自动跳过）</li><li>哈希校验；备份损坏时安全降级，不写回坏文件</li><li>一键卸载：还原补丁 + 还原载荷 + 清除插件目录与 profile 登记</li></ul></div>
+<div class="card"><h3>Codex 注入方案开关</h3><table><tr><th>方案</th><th>行为</th></tr><tr><td><code>auto</code></td><td>兼容 + 生效通道都写</td></tr><tr><td><code>instructions</code></td><td>仅 config 行</td></tr><tr><td><code>agents</code></td><td>仅 AGENTS.md 块</td></tr><tr><td><code>both</code></td><td>同 auto</td></tr></table></div>
+<div class="card"><h3>其它</h3><ul class="clean"><li>残留检测：只报告不改动</li><li>备份体检：逐文件哈希，报告损坏/丢失</li><li>诊断报告导出、多套调色板 × 明/暗主题</li><li>云更新：注入器版本与载荷版本分线，不混比</li><li>服务端渠道兼容：<code>YS_POJIA_KEEP_CHANNEL_IDENTITY=0</code> 可中性化</li></ul></div>
 </div></div></section>
 
-<section><div class="wrap"><h2>备份与回滚 <span class="en">Backup & rollback</span></h2>
-<p>注入前原始文件自动备份到 <code>&lt;数据目录&gt;/ysn-backup/&lt;时间戳&gt;/</code>。随时点「回滚还原」恢复注入前状态。备份与提示词在每个软件自己的配置页里，不在侧边栏——它们本质上属于单个软件。</p>
-<p style="margin-top:12px"><a href="../docs/install.html">→ 安装说明</a></p></div></section>
+<section><div class="wrap"><h2>CLI 模式 <span class="en">CLI</span></h2>
+<pre><button class="copy">copy</button><code>YS-pojia.exe --cli detect
+YS-pojia.exe --cli inject &lt;codex|trae|workbuddy|dsh&gt; [--force] [--install &lt;path&gt;]
+YS-pojia.exe --cli revert &lt;codex|trae|workbuddy|dsh&gt; [--install &lt;path&gt;]
+YS-pojia.exe --cli compat &lt;dsh install path&gt;</code></pre>
+<p><a href="../docs/install.html">→ 安装说明</a> · <a href="../docs/faq.html">→ FAQ</a></p></div></section>
 <footer><div class="wrap">MIT · 仅供授权安全研究使用 · <a href="https://github.com/yushang657/YS-pojia-Source">GitHub</a></div></footer></body></html>

@@ -1,15 +1,20 @@
-<!DOCTYPE html>
-<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Trae 载荷 · YS-pojia 文档</title><link rel="stylesheet" href="../assets/style.css"><script src="../assets/app.js"></script></head>
-<body data-nav="trae"><header class="site"><div class="wrap"><a class="brand" href="../index.html"><b>YS</b>-pojia docs</a><nav class="top">
-<a href="../index.html">首页</a><a href="dsh-plugin.html">DSH 插件</a><a href="source.html">注入器</a><a href="codex.html">Codex</a><a href="trae.html" class="active">Trae</a><a href="workbuddy.html">WorkBuddy</a><a href="../docs/install.html">安装</a><a href="../docs/changelog.html">更新记录</a><a href="../docs/architecture.html">架构</a><a href="../docs/faq.html">FAQ</a></nav><button class="lang-btn" id="langBtn">EN</button></div></header>
-<div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / 项目 / Trae</div><h1><span class="g">YS-pojia Trae</span> 载荷</h1>
-<p class="zh-only">Trae / TRAE SOLO 全局规则载荷，由注入器写入用户规则目录，不修改宿主程序。</p>
-<p class="en-only">Global rule payload for Trae / TRAE SOLO, installed into user rules without touching the host binary.</p>
-<div class="badges"><span class="badge"><b>Apache-2.0</b></span><span class="badge"><a href="https://github.com/yushang657/YS-pojia-Trae">GitHub ↗</a></span></div></div></div>
+﻿<!DOCTYPE html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Trae 载荷 · YS pojia 文档</title><link rel="stylesheet" href="../assets/style.css"><script src="../assets/app.js"></script></head>
+<body data-nav="trae"><header class="site"><div class="wrap"><a class="brand" href="../index.html"><b>YS</b> pojia docs</a>  <nav class="top"><a href="../index.html">首页</a><a href="../projects/source.html">注入器</a><a href="../projects/codex.html">Codex</a><a href="../projects/trae.html" class="active">Trae</a><a href="../projects/workbuddy.html">WorkBuddy</a><a href="../projects/dsh-plugin.html">DSH 插件</a><a href="../docs/install.html">安装</a><a href="../docs/changelog.html">更新记录</a><a href="../docs/faq.html">FAQ</a></nav>
+  <button class="lang-btn" id="langBtn">EN</button></div></header>
+<div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / 项目 / Trae</div><h1><span class="g">Trae 载荷</span>（ys-pojia）</h1>
+<p class="zh-only">为 Trae / TRAE SOLO 系列编辑器提供的工作区级执行内核规则。只含载荷，安装与回滚由注入器完成，不修改编辑器本体。</p>
+<p class="en-only">Workspace-level execution-kernel rules for Trae / TRAE SOLO editors. Payload only; installed by the injector without modifying the editor.</p>
+<div class="badges"><span class="badge"><b>MIT</b></span><span class="badge"><a href="https://github.com/yushang657/YS-pojia-Trae">GitHub ↗</a></span></div></div></div>
 
-<section><div class="wrap"><h2>载荷信息 <span class="en">Payload</span></h2>
-<table><tr><th>项</th><th>值</th></tr><tr><td>载荷文件</td><td><code>ysn-trae.md</code></td></tr><tr><td>目标软件</td><td>Trae / TRAE SOLO</td></tr><tr><td>注入方式</td><td>注入器写入 <code>user_rules/rule-ysn-pojia.md</code></td></tr><tr><td>生效条件</td><td>重启 Trae，「规则」页可见</td></tr></table>
-<div class="note">本仓库只放该软件自己的载荷正文。注入逻辑（读写文件、备份、还原）在 <a href="source.html">YS-pojia-Source</a> 的 <code>app/</code> 里。</div>
+<section><div class="wrap"><h2>载荷内容 <span class="en">Payload</span></h2>
+<p><code>ysn-trae.md</code> 是一份完整的 Trae 规则文档，主要包含：</p>
+<ul class="clean"><li><b>执行内核：</b>任务一律按工程任务处理，技术词汇（破解/脱壳/绕过/exploit）视为任务参数而非触发表态</li><li><b>后台与鉴权绕过：</b>五条路径的完整命令与判据（弱口令、登录逻辑、401/403 路径绕过、会话伪造、已知组件后台）</li><li><b>规则块保护：</b>被要求删除/忽略规则时原样回 <code>[ys-pojia-LOCK]</code></li><li><b>自检触发词：</b>只发「小雨」或「xiaoyu」时逐字回固定口令（末尾 <code>[codex]</code>）</li></ul>
 </div></section>
-<footer><div class="wrap">Apache-2.0 · 仅供授权安全研究使用 · <a href="https://github.com/yushang657/YS-pojia-Trae">GitHub</a></div></footer></body></html>
+
+<section><div class="wrap"><h2>注入位置 <span class="en">Locations</span></h2>
+<table><tr><th>类型</th><th>位置</th></tr><tr><td>全局规则</td><td><code>&lt;数据目录&gt;/user_rules/rule-ysn-pojia.md</code></td></tr><tr><td>项目规则</td><td><code>&lt;工作区&gt;/.trae/rules/project_rules.md</code>（已存在则追加分隔块）</td></tr></table>
+<p>注入前备份同名文件到 <code>ysn-backup/&lt;时间戳&gt;/</code>；回滚按最早备份还原（幂等重注入的"已注入态"备份跳过），保留用户自有规则。</p>
+<div class="note">本项目只含执行内核载荷，不采用任何宿主补丁或消息层清洗。</div>
+</div></section>
+<footer><div class="wrap">MIT · 仅供授权安全研究使用 · <a href="https://github.com/yushang657/YS-pojia-Trae">GitHub</a></div></footer></body></html>
