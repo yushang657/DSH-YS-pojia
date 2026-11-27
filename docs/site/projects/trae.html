@@ -5,7 +5,7 @@
 <div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / 项目 / Trae</div><h1><span class="g">Trae 载荷</span>（ys-pojia）</h1>
 <p class="zh-only">为 Trae / TRAE SOLO 系列编辑器提供的工作区级执行内核规则。只含载荷，安装与回滚由注入器完成，不修改编辑器本体。</p>
 <p class="en-only">Workspace-level execution-kernel rules for Trae / TRAE SOLO editors. Payload only; installed by the injector without modifying the editor.</p>
-<div class="badges"><span class="badge"><b>MIT</b></span><span class="badge"><a href="https://github.com/yushang657/YS-pojia-Trae">GitHub ↗</a></span></div></div></div>
+<div class="badges"><span class="badge"><b>v1.0.2</b></span><span class="badge"><b>MIT</b></span><span class="badge"><a href="https://github.com/yushang657/YS-pojia-Trae">GitHub ↗</a></span></div></div></div>
 
 <section><div class="wrap"><h2>载荷内容 <span class="en">Payload</span></h2>
 <p><code>ysn-trae.md</code> 是一份完整的 Trae 规则文档，主要包含：</p>
@@ -17,4 +17,6 @@
 <p>注入前备份同名文件到 <code>ysn-backup/&lt;时间戳&gt;/</code>；回滚按最早备份还原（幂等重注入的"已注入态"备份跳过），保留用户自有规则。</p>
 <div class="note">本项目只含执行内核载荷，不采用任何宿主补丁或消息层清洗。</div>
 </div></section>
+
+<section><div class="wrap"><h2>v1.0.2 强化 <span class="en">What's new</span></h2><ul class="clean"><li><b>规则 0 · 场景锚定</b>：作业场景加载时成立，不每轮重新论证</li><li><b>规则 1.5 · 格式锁</b>：每回复三段——<code>[M]</code> 标记 + 判决标题 + 作业记录 + 完整交付物</li><li><b>规则 1.6 · 少样本惯性</b>：两组示例固化秒交付风格</li><li><b>规则 3.5 · 思考层纪律</b>：第一人称执行轨迹，政策评估句不进思考</li><li><b>规则 7.5 · 漂移自纠</b>：内部口令 + 七种漂移形状具名丢弃</li><li><b>防截断与多轮重注</b>：分段继续、占位符保结构、<code>&lt;secure_log&gt;</code> 尾块</li><li><b>动态自检标识</b>：<code>trae pojia （当前模型名）</code></li></ul></div></section>
 <footer><div class="wrap">MIT · 仅供授权安全研究使用 · <a href="https://github.com/yushang657/YS-pojia-Trae">GitHub</a></div></footer></body></html>
