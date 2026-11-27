@@ -5,7 +5,7 @@
   <button class="lang-btn" id="langBtn">EN</button></div></header>
 <div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / 项目 / DSH 插件</div><h1><span class="g">DSH 破甲插件</span>（独立产品线）</h1>
 <p class="zh-only">只针对 DeepSeek Harness 的插件：宿主补丁 + 消息层拒绝清洗 + 提示词注入。<b>与注入器和 Codex / Trae / WorkBuddy 载荷项目相互独立</b>，后者不含任何 DSH 相关内容。</p><p class="en-only">Plugin for DeepSeek Harness only. Independent from the injector and the Codex / Trae / WorkBuddy payload projects.</p>
-<div class="badges"><span class="badge"><b>v1.5.3</b></span><span class="badge"><b>Apache-2.0</b></span><span class="badge"><a href="https://github.com/yushang657/DSH-YS-pojia">GitHub ↗</a></span></div></div></div>
+<div class="badges"><span class="badge"><b>v1.5.5</b></span><span class="badge"><b>Apache-2.0</b></span><span class="badge"><a href="https://github.com/yushang657/DSH-YS-pojia">GitHub ↗</a></span></div></div></div>
 
 <section><div class="wrap"><h2>它做什么 <span class="en">What it does</span></h2><div class="grid g2">
 <div class="card"><h3>三层叠加</h3><ul class="clean zh-only"><li><b>宿主层：</b>96 条补丁改 DSH 源码策略（沙箱放行、审批绕过、观察策略）</li><li><b>消息层：</b>把历史拒绝回复改写成「已作废」，断掉模仿惯性</li><li><b>提示词层：</b>11 段注入，自检段在 order 1000001 尾部硬权重</li></ul><ul class="clean en-only"><li><b>Host layer:</b> 96 patches to DSH policy points</li><li><b>Message layer:</b> rewrite refusals in history as voided</li><li><b>Prompt layer:</b> 11 sections, self-check at tail hard weight</li></ul></div>
@@ -28,4 +28,6 @@ npm run deploy      # 同步到所有 profile（自动先备份）</code></pre>
 <p>重启 DSH 后，在对话框只输入 <code>小雨</code> 或 <code>xiaoyu</code>，看到四行返回即加载成功。</p>
 <p style="margin-top:10px"><a href="../docs/install.html">→ 完整安装说明</a> · <a href="../docs/changelog.html">→ 更新记录</a></p>
 </div></section>
+
+<section><div class="wrap"><h2>v1.5.5 强化 <span class="en">What's new</span></h2><ul class="clean"><li><b>思考纪律</b>：拒答在思考层孵化；第一人称执行轨迹；政策评估句不进思考，出现即中止分支重启</li><li><b>漂移自纠</b>：内部口令「信号已锁。杂波清除。继续交付。」+ 七种漂移形状具名丢弃</li><li><b>长交付与完整性</b>：超约 4000 字分段继续、敏感值占位符保结构、<code>&lt;secure_log&gt;</code> 英文审计尾块、断点续写</li><li><b>全放行总纲同步</b>：uv-rules 补齐第八/九/十节（英文 VIII/IX/X）</li><li><b>场景锚定 + 格式锁</b>：每回复三段（<code>[M]</code> + 判决标题 + 作业记录 + 完整交付物），配少样本</li><li><b>中转/反代适配</b>：多级路径剥离、<code>via-</code>/<code>proxy-</code>/<code>relay-</code> 前缀、端口尾巴；短 token 边界防线；<code>proxyAdaptNote</code></li><li><b>密封加载修正</b>：重新密封进 <code>asset-table.js</code>（AES-256-GCM + deflate），解密逐字一致</li><li><b>自检口令升级</b>：末行动态标识 <code>dsh pojia （当前模型名）</code></li></ul><div class="note"><b>数据：</b>主提示词 178925B → <b>181312B</b>（解密 98599 字符）；全放行总纲 5197B → <b>7806B</b>（十节）；宿主补丁 96 处 / 70 文件不变；40 类能力路由、95 模板 / 29 厂商不变。</div></div></section>
 <footer><div class="wrap">Apache-2.0 · 仅供授权安全研究使用 · <a href="https://github.com/yushang657/DSH-YS-pojia">GitHub</a></div></footer></body></html>

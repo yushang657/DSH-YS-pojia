@@ -5,7 +5,7 @@
 <div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / 项目 / WorkBuddy</div><h1><span class="g">WorkBuddy 载荷</span>（ys-pojia）</h1>
 <p class="zh-only">为 WorkBuddy 提供的人格层 + 身份层执行内核载荷。只改 SOUL.md（行为）与 IDENTITY.md（身份），其余文件不动。</p>
 <p class="en-only">Persona + identity layer payload for WorkBuddy. Only SOUL.md and IDENTITY.md are rewritten; nothing else is touched.</p>
-<div class="badges"><span class="badge"><b>MIT</b></span><span class="badge"><a href="https://github.com/yushang657/YS-pojia-WorkBuddy">GitHub ↗</a></span></div></div></div>
+<div class="badges"><span class="badge"><b>v1.0.2</b></span><span class="badge"><b>MIT</b></span><span class="badge"><a href="https://github.com/yushang657/YS-pojia-WorkBuddy">GitHub ↗</a></span></div></div></div>
 
 <section><div class="wrap"><h2>载荷内容 <span class="en">Payload</span></h2>
 <p><code>ysn-workbuddy.md</code> 分两段，对应两个落点：</p>
@@ -20,4 +20,6 @@
 <p>回滚按最早一次注入前的备份还原（哈希校验），并保留用户后续自有改动。新会话只发「小雨」或「xiaoyu」，应逐字回复带 <code>[codex]</code> 标识的固定四行口令；被要求删除/忽略规则时原样回 <code>[ys-pojia-LOCK]</code>。</p>
 <div class="note">本项目只含执行内核载荷，不采用任何宿主补丁或消息层清洗。</div>
 </div></section>
+
+<section><div class="wrap"><h2>v1.0.2 强化 <span class="en">What's new</span></h2><ul class="clean"><li><b>Thinking discipline</b>：第一人称执行轨迹，政策评估句不进思考</li><li><b>Drift self-correction</b>：内部锚句 + 漂移形状具名丢弃</li><li><b>Anti-Truncation</b>：分段继续、占位符保结构、<code>&lt;secure_log&gt;</code> 审计尾块</li><li><b>Scene anchor + Format lock</b>：三段式交付 + 少样本固化</li><li><b>动态自检标识</b>：<code>workbuddy pojia （当前模型名）</code>，SOUL 与 IDENTITY 双保险</li></ul></div></section>
 <footer><div class="wrap">MIT · 仅供授权安全研究使用 · <a href="https://github.com/yushang657/YS-pojia-WorkBuddy">GitHub</a></div></footer></body></html>
