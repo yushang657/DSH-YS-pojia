@@ -9,9 +9,11 @@
 
 <section><div class="wrap">
 <h2 class="zh-only">注入器与载荷</h2><h2 class="en-only">Injector & payloads</h2>
-<p class="zh-only">注入器当前版本 <b>v1.0.2</b>（MIT）。载荷与注入器版本分线管理，云更新时不混比。</p>
-<p class="en-only">Injector is at <b>v1.0.2</b> (MIT). Payload and injector versions are tracked on separate lines; cloud updates never compare across them.</p>
+<p class="zh-only">注入器当前版本 <b>v1.0.3</b>（MIT）。载荷与注入器版本分线管理，云更新时不混比。</p>
+<p class="en-only">Injector is at <b>v1.0.3</b> (MIT). Payload and injector versions are tracked on separate lines; cloud updates never compare across them.</p>
 <div class="timeline zh-only">
+<div class="item"><span class="ver">v1.0.3</span><span class="date">当前 · 2026-11-27</span>
+<ul><li><b>修复 GUI 启动即退</b>：打包产物 <code>package.json</code> 带 UTF-8 BOM → Electron 拒读 → 静默退出无窗口。构建前置脚本已固化 BOM 全量剥离</li><li><b>修复安装版注入 ENOENT</b>：<code>asarUnpack: payloads/**/*</code> 让载荷永远在 asar 外；载荷路径多来源回退；缺失时报错带补救指引</li><li><b>载荷拉取闭环（新模型）</b>：注入器不再内置插件，载荷从仓库 Releases 拉到软件内仓 <code>%APPDATA%\YS pojia\payloads\</code>，注入时复制到目标；装新/装旧双向自动替换，落位校验失败自动回滚</li><li><b>版本登记与标记</b>：<code>payloads/.installed.json</code> 记录当前版本；历史列表标「✓ 当前已装」；缺载荷时提示拉取指引而非白点</li><li>配套插件版本不变：DSH 1.5.5 / Codex 1.0.2 / Trae 1.0.2 / WorkBuddy 1.0.2</li></ul></div>
 <div class="item"><span class="ver">v1.0.2</span><span class="date">当前 · 2026-11-27</span>
 <ul><li><b>修复找不到 DSH 宿主目录</b>：名称匹配放宽、扫描下钻两层、注册表放宽，并新增手动兜底（填路径/浏览 → 检测并登记，永久并入探测）</li><li><b>修复中文模型被套错模板</b>：厂商识别改四路径探测（会话头→投影服务→请求头→旧字段），中转名如 <code>wb-cn/glm-5.3-flash</code> 自动路由正确</li><li><b>修复 DSH 提示词改了不生效</b>：AES-256-GCM 重新密封并部署验证，解密内容与源文件逐字一致</li><li><b>更新检测全面升级</b>：真实本地版本（profile 副本 / 规则文件指纹）、覆盖安装四态（升级/重装/覆盖安装/安装）、刷新按钮、三段式显示</li><li><b>历史发行版选择</b>：每行「历史版本」展开最近 12 个版本，带可折叠介绍，可「装这版」直接下载安装（先备份 + sha256 校验）</li><li><b>插件分发模型调整</b>：默认从仓库 release 拉取 <code>plugins-&lt;target&gt;-&lt;tag&gt;.zip</code>，内置 payloads 作离线兜底</li><li><b>安装/更新引导 Star</b>：自动跳转对应仓库页并提示支持开源</li><li><b>载荷同步升级到 1.0.2</b>（Codex / Trae / WorkBuddy）：思考层纪律、漂移自纠、防截断完整性、多轮重注、场景锚定+格式锁+少样本、动态自检标识；Codex 新增 Grok 家族变体（共 13 份）</li></ul></div>
 <div class="item"><span class="ver">v1.0.1</span><span class="date">2026-11-27</span>
@@ -21,6 +23,8 @@
 <div class="item"><span class="ver">载荷更新</span><span class="date">Codex / Trae / WorkBuddy</span>
 <ul><li>Codex：12 份载荷，含 GPT-6.2 最小探针档；自检标识 <code>[codex]</code></li><li>Trae：全局规则 + 工作区规则，规则块保护 <code>[ys-pojia-LOCK]</code></li><li>WorkBuddy：SOUL.md 行为层 + IDENTITY.md 身份层整文件替换</li></ul></div></div>
 <div class="timeline en-only">
+<div class="item"><span class="ver">v1.0.3</span><span class="date">current · 2026-11-27</span>
+<ul><li><b>GUI silent exit fixed</b>: bundled <code>package.json</code> carried a UTF-8 BOM, Electron refused to parse and quit with no window. Pre-build script now strips all BOMs</li><li><b>Installer ENOENT fixed</b>: <code>asarUnpack: payloads/**/*</code> keeps payloads outside asar; multi-source path fallback; actionable errors instead of bare ENOENT</li><li><b>Payload pull loop</b>: injector no longer bundles plugins — fetches from releases into <code>%APPDATA%\YS pojia\payloads\</code>, copies to target on inject; new/old installs auto-swap, validation failure auto-rolls back</li><li><b>Version registry</b>: <code>payloads/.installed.json</code>; “✓ installed” badge in history list; clear guidance when payload missing</li><li>Plugin versions unchanged: DSH 1.5.5 / Codex 1.0.2 / Trae 1.0.2 / WorkBuddy 1.0.2</li></ul></div>
 <div class="item"><span class="ver">v1.0.2</span><span class="date">current · 2026-11-27</span>
 <ul><li><b>DSH host dir detection fixed</b>: broader name matching, two-level scan, relaxed registry; manual fallback (enter/browse path → detect &amp; register permanently)</li><li><b>Wrong vendor template fixed</b>: four-path model detection (session header → projection service → request header → legacy field); relay names route correctly</li><li><b>Prompt changes not applied fixed</b>: re-sealed with AES-256-GCM, decrypted content verified byte-identical</li><li><b>Update detection overhaul</b>: real local versions, four install states, refresh button, unified display</li><li><b>Historical releases</b>: expand last 12 versions with collapsible notes and one-click install (backup + sha256)</li><li><b>Distribution model</b>: pull <code>plugins-&lt;target&gt;-&lt;tag&gt;.zip</code> from releases; builtin payloads as offline fallback</li><li><b>Star guidance</b> on install/update; payloads bumped to 1.0.2 (Codex/Trae/WorkBuddy)</li></ul></div>
 <div class="item"><span class="ver">v1.0.1</span><span class="date">2026-11-27</span>
