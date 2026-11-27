@@ -47,10 +47,10 @@ table{width:100%;border-collapse:collapse;font-size:14px}
 th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
 th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.4px}
 tr:hover td{background:rgba(255,255,255,.025)}
-.tag{display:inline-block;padding:2px 9px;border-radius:6px;font-size:12px;background:var(--card2);color:var(--muted)}
-.tag.ok{background:rgba(130,177,155,.14);color:var(--green)}
-.tag.warn{background:rgba(194,165,112,.14);color:var(--amber)}
-.tag.no{background:rgba(196,133,133,.14);color:var(--red)}
+.tag{display:inline-block;padding:2px 9px;border-radius:6px;font-size:12px;background:var(--card2);color:var(--muted);border:1px solid var(--line)}
+.tag.ok{background:var(--card2);color:var(--txt);border-color:#3a4a44}
+.tag.warn{background:var(--card2);color:var(--txt);border-color:#4a4436}
+.tag.no{background:var(--card2);color:var(--txt);border-color:#4a3a3a}
 code{background:var(--card2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.9em;font-family:ui-monospace,Consolas,monospace;color:var(--txt)}
 pre{background:#11151a;border:1px solid var(--line);border-radius:10px;padding:16px;overflow:auto;font-size:13px;line-height:1.6;margin:12px 0}
 pre code{background:none;border:none;padding:0}
@@ -72,11 +72,17 @@ ul.clean li b{color:var(--txt)}
 .breadcrumb{color:var(--muted);font-size:13px;padding:18px 0 0}
 .breadcrumb a{color:var(--muted)}
 footer{padding:30px 0;color:var(--muted);font-size:13px;text-align:center;border-top:1px solid var(--line)}
+/* ── 中英切换 ──
+   默认显示中文（zh-only），英文隐藏。切换 lang-en 后反过来。
+   注意：zh-only/en-only 用在 <p>/<ul>/<div> 等块级元素上，
+   所以显示时必须用 block（不能用 inline，否则段落挤成一行）。 */
 .en-only{display:none}
-body.lang-en .zh-only{display:none}
-body.lang-en .en-only{display:inline}
-body.lang-en .en-block{display:block}
-body.lang-en .zh-block{display:none}
+span.en-only, a.en-only, b.en-only, code.en-only{display:none}
+body.lang-en .zh-only{display:none!important}
+body.lang-en .en-only{display:block!important}
+body.lang-en span.en-only, body.lang-en a.en-only, body.lang-en b.en-only, body.lang-en code.en-only{display:inline!important}
+body.lang-en .zh-block{display:none!important}
+body.lang-en .en-block{display:block!important}
 @media(max-width:700px){
   .hero h1{font-size:30px}
   header.site .wrap{height:auto;padding:10px 20px;gap:8px}

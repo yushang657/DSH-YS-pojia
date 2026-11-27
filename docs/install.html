@@ -3,26 +3,27 @@
 <title>安装说明 · YS pojia 文档</title><link rel="stylesheet" href="../assets/style.css"><script src="../assets/app.js"></script></head>
 <body data-nav="install"><header class="site"><div class="wrap"><a class="brand" href="../index.html"><b>YS</b> pojia docs</a>  <nav class="top"><a href="../index.html">首页</a><a href="../projects/source.html">注入器</a><a href="../projects/codex.html">Codex</a><a href="../projects/trae.html">Trae</a><a href="../projects/workbuddy.html">WorkBuddy</a><a href="../projects/dsh-plugin.html">DSH 插件</a><a href="../docs/install.html" class="active">安装</a><a href="../docs/changelog.html">更新记录</a><a href="../docs/faq.html">FAQ</a></nav>
   <button class="lang-btn" id="langBtn">EN</button></div></header>
-<div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / 文档 / 安装</div><h1><span class="g">安装与注入</span></h1><p>注入器面向 Windows（Electron 桌面程序 + CLI）。所有写操作前自动逐文件备份，可按最早备份回滚。</p></div></div>
+<div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / <span class="zh-only">文档 / 安装</span><span class="en-only">Docs / Install</span></div><h1 class="zh-only"><span class="g">安装与注入</span></h1><p class="zh-only">注入器面向 Windows（Electron 桌面程序 + CLI）。所有写操作前自动逐文件备份，可按最早备份回滚。</p><h1 class="en-only"><span class="g">Install & Inject</span></h1><p class="en-only">The injector targets Windows (Electron desktop app + CLI). Every write is backed up per file and can be rolled back to the earliest backup.</p></div></div>
 
-<section><div class="wrap"><h2>桌面程序 <span class="en">Desktop</span></h2>
-<p>克隆 <a href="https://github.com/yushang657/YS-pojia-Source">YS-pojia-Source</a>，双击 <code>YS-pojia.exe</code>：</p>
-<ol style="padding-left:22px;color:var(--muted)"><li style="padding:5px 0">应用首页看统计卡（已安装 / 未安装 / 已注入），选目标。</li><li style="padding:5px 0">进目标配置页：状态与操作 / 补丁明细 / 插件面板 / 备份 / 提示词。</li><li style="padding:5px 0">点「注入」。写操作前自动备份到目标数据目录的 <code>ysn-backup/&lt;时间戳&gt;/</code>。</li><li style="padding:5px 0">需要时「回滚」——只认最早备份，幂等重注入的"已注入态"备份自动跳过。</li></ol>
-<div class="note">Codex 配置页可切换注入方案 <code>auto / instructions / agents / both</code>，切换后点「保存并重新注入 Codex」，可随时回退。设置持久化在 <code>userData/injector-settings.json</code>。</div>
+<section><div class="wrap"><h2 class="zh-only">桌面程序</h2>
+<p class="zh-only">克隆 <a href="https://github.com/yushang657/YS-pojia-Source">YS-pojia-Source</a>，双击 <code>YS-pojia.exe</code>：</p>
+<ol class="zh-only" style="padding-left:22px;color:var(--muted)"><li style="padding:5px 0">应用首页看统计卡（已安装 / 未安装 / 已注入），选目标。</li><li style="padding:5px 0">进目标配置页：状态与操作 / 补丁明细 / 插件面板 / 备份 / 提示词。</li><li style="padding:5px 0">点「注入」。写操作前自动备份到目标数据目录的 <code>ysn-backup/&lt;时间戳&gt;/</code>。</li><li style="padding:5px 0">需要时「回滚」——只认最早备份，幂等重注入的"已注入态"备份自动跳过。</li></ol>
+<div class="en-only"><h2>Desktop</h2><p>Clone <a href="https://github.com/yushang657/YS-pojia-Source">YS-pojia-Source</a> and run <code>YS-pojia.exe</code>:</p><ol style="padding-left:22px;color:var(--muted)"><li style="padding:5px 0">Check the home stats (installed / not installed / injected) and pick a target.</li><li style="padding:5px 0">Open a target page: status / patch detail / plugin panel / backup / prompts.</li><li style="padding:5px 0">Click Inject. Files are backed up to <code>ysn-backup/&lt;timestamp&gt;/</code> before writing.</li><li style="padding:5px 0">Rollback uses only the earliest backup; idempotent "already injected" backups are skipped.</li></ol></div>
+<div class="note"><span class="zh-only">Codex 配置页可切换注入方案 <code>auto / instructions / agents / both</code>，切换后点「保存并重新注入 Codex」，可随时回退。设置持久化在 <code>userData/injector-settings.json</code>。</span><span class="en-only">The Codex page switches injection schemes <code>auto / instructions / agents / both</code>; after switching, re-inject. Settings persist in <code>userData/injector-settings.json</code>.</span></div>
 </div></section>
 
-<section><div class="wrap"><h2>CLI 模式 <span class="en">CLI</span></h2>
+<section><div class="wrap"><h2 class="zh-only">CLI 模式</h2>
 <pre><button class="copy">copy</button><code>YS-pojia.exe --cli detect
 YS-pojia.exe --cli inject &lt;codex|trae|workbuddy|dsh&gt; [--force] [--install &lt;path&gt;]
 YS-pojia.exe --cli revert &lt;codex|trae|workbuddy|dsh&gt; [--install &lt;path&gt;]
 YS-pojia.exe --cli compat &lt;dsh install path&gt;</code></pre>
 </div></section>
 
-<section><div class="wrap"><h2>DSH 插件单独部署 <span class="en">DSH only</span></h2>
+<section><div class="wrap"><h2 class="zh-only">DSH 插件单独部署</h2>
 <pre><button class="copy">copy</button><code>git clone https://github.com/yushang657/DSH-YS-pojia.git
 cd DSH-YS-pojia
 npm run deploy</code></pre>
-<p>重启 DSH 后，对话框只发「小雨」验证。这部分只适用于 DSH 插件；Codex / Trae / WorkBuddy 请走上面的注入器方式。</p>
+<p class="zh-only">重启 DSH 后，对话框只发「小雨」验证。这部分只适用于 DSH 插件；Codex / Trae / WorkBuddy 请走上面的注入器方式。</p><div class="en-only"><h2>CLI mode</h2><p>Headless CLI: <code>--cli detect / inject / revert / compat</code>. See the code block above.</p><h2>DSH plugin only</h2><p>After deploying, restart DSH and send only 「小雨」 to verify. This part applies to the DSH plugin only; Codex / Trae / WorkBuddy use the injector above.</p></div>
 <p style="margin-top:14px"><a href="faq.html">→ 常见问题</a> · <a href="changelog.html">→ 更新记录</a></p>
 </div></section>
-<footer><div class="wrap">仅供授权安全研究使用 · <a href="../index.html">返回首页</a></div></footer></body></html>
+<footer><div class="wrap"><span class="zh-only">仅供授权安全研究使用 · <a href="../index.html">返回首页</a></span><span class="en-only">For authorized security research only · <a href="../index.html">Home</a></span></div></footer></body></html>

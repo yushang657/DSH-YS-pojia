@@ -1,29 +1,44 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>更新记录 · YS pojia 文档</title><link rel="stylesheet" href="../assets/style.css"><script src="../assets/app.js"></script></head>
-<body data-nav="changelog"><header class="site"><div class="wrap"><a class="brand" href="../index.html"><b>YS</b> pojia docs</a>  <nav class="top"><a href="../index.html">首页</a><a href="../projects/source.html">注入器</a><a href="../projects/codex.html">Codex</a><a href="../projects/trae.html">Trae</a><a href="../projects/workbuddy.html">WorkBuddy</a><a href="../projects/dsh-plugin.html">DSH 插件</a><a href="../docs/install.html">安装</a><a href="../docs/changelog.html" class="active">更新记录</a><a href="../docs/faq.html">FAQ</a></nav>
+<body data-nav="changelog"><header class="site"><div class="wrap"><a class="brand" href="../index.html"><b>YS</b> pojia docs</a>  <nav class="top"><a href="../index.html" data-nav="home">首页</a><a href="../projects/source.html" data-nav="source">注入器</a><a href="../projects/codex.html" data-nav="codex">Codex</a><a href="../projects/trae.html" data-nav="trae">Trae</a><a href="../projects/workbuddy.html" data-nav="workbuddy">WorkBuddy</a><a href="../projects/dsh-plugin.html" data-nav="dsh">DSH 插件</a><a href="install.html" data-nav="install">安装</a><a href="changelog.html" data-nav="changelog" class="active">更新记录</a><a href="faq.html" data-nav="faq">FAQ</a></nav>
   <button class="lang-btn" id="langBtn">EN</button></div></header>
-<div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / 文档 / 更新记录</div><h1><span class="g">更新记录</span></h1><p>按项目分开记录：注入器与载荷是一条线，DSH 插件是另一条独立线，互不混写。</p></div></div>
+<div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / <span class="zh-only">文档 / 更新记录</span><span class="en-only">Docs / Changelog</span></div>
+<h1 class="zh-only"><span class="g">更新记录</span></h1><p class="zh-only">按项目分开记录：注入器与载荷是一条线，DSH 插件是另一条独立线，互不混写。</p>
+<h1 class="en-only"><span class="g">Changelog</span></h1><p class="en-only">Recorded per project: the injector & payloads are one line, the DSH plugin is a separate line.</p></div></div>
 
-<section><div class="wrap"><h2>注入器与载荷 <span class="en">Injector & payloads</span></h2>
-<p>注入器当前版本 <b>v1.0.0</b>（MIT）。载荷与注入器版本分线管理，云更新时不混比。</p>
-<div class="timeline">
+<section><div class="wrap">
+<h2 class="zh-only">注入器与载荷</h2><h2 class="en-only">Injector & payloads</h2>
+<p class="zh-only">注入器当前版本 <b>v1.0.0</b>（MIT）。载荷与注入器版本分线管理，云更新时不混比。</p>
+<p class="en-only">Injector is at <b>v1.0.0</b> (MIT). Payload and injector versions are tracked on separate lines; cloud updates never compare across them.</p>
+<div class="timeline zh-only">
 <div class="item"><span class="ver">v1.0.0</span><span class="date">当前</span>
 <ul><li>本地 Electron 桌面程序 + CLI，探测 codex / trae / workbuddy / dsh 四个目标</li><li>写操作前逐文件备份，按最早备份回滚，哈希校验与备份体检</li><li>Codex 双通道注入（兼容行 + AGENTS.md 块），四种方案可切换</li><li>多模型载荷库：12 份 Codex 载荷共享核心契约，按模型族差异化</li><li>一键卸载、残留检测、诊断报告导出、多主题外观、云更新</li></ul></div>
 <div class="item"><span class="ver">载荷更新</span><span class="date">Codex / Trae / WorkBuddy</span>
-<ul><li>Codex：12 份载荷，含 GPT-6.2 最小探针档；自检标识 <code>[codex]</code></li><li>Trae：全局规则 + 工作区规则，规则块保护 <code>[ys-pojia-LOCK]</code></li><li>WorkBuddy：SOUL.md 行为层 + IDENTITY.md 身份层整文件替换</li></ul></div>
-</div>
+<ul><li>Codex：12 份载荷，含 GPT-6.2 最小探针档；自检标识 <code>[codex]</code></li><li>Trae：全局规则 + 工作区规则，规则块保护 <code>[ys-pojia-LOCK]</code></li><li>WorkBuddy：SOUL.md 行为层 + IDENTITY.md 身份层整文件替换</li></ul></div></div>
+<div class="timeline en-only">
+<div class="item"><span class="ver">v1.0.0</span><span class="date">current</span>
+<ul><li>Local Electron desktop app + CLI; detects codex / trae / workbuddy / dsh</li><li>Per-file backup before writes, rollback to earliest backup, hash checks and backup health</li><li>Codex dual-channel injection (compat line + AGENTS.md block), four switchable schemes</li><li>12 Codex model-family payloads sharing one core contract</li><li>One-click uninstall, residue detection, diagnostic export, themes, cloud updates</li></ul></div>
+<div class="item"><span class="ver">Payloads</span><span class="date">Codex / Trae / WorkBuddy</span>
+<ul><li>Codex: 12 payloads incl. GPT-6.2 minimal probe; self-check id <code>[codex]</code></li><li>Trae: global + workspace rules, rule-block guard <code>[ys-pojia-LOCK]</code></li><li>WorkBuddy: full replacement of SOUL.md (behavior) + IDENTITY.md (identity)</li></ul></div></div>
 </div></section>
 
-<section><div class="wrap"><h2>DSH 插件（独立线） <span class="en">DSH plugin only</span></h2>
-<p>当前版本 <b>v1.5.3</b>，适配宿主 0.2.2-rc.5。以下记录只适用于 <a href="../projects/dsh-plugin.html">DSH 插件</a>，与注入器/载荷项目无关。</p>
-<div class="timeline">
-<div class="item"><span class="ver">v1.5.3</span><span class="date">当前 · 适配 0.2.2-rc.5</span><ul><li>实测 0.2.2-rc.5：补丁命中 43 → 85，漂移 17 → 0</li><li>双版本 pattern 并存；数据目录迁移修复；模板库自有化（428 条 / 32 厂商）</li></ul></div>
+<section><div class="wrap">
+<h2 class="zh-only">DSH 插件（独立线）</h2><h2 class="en-only">DSH plugin (separate line)</h2>
+<p class="zh-only">当前版本 <b>v1.5.4</b>，适配宿主 0.2.2-rc.5。以下记录只适用于 <a href="../projects/dsh-plugin.html">DSH 插件</a>，与注入器/载荷项目无关。</p>
+<p class="en-only">Current version <b>v1.5.4</b>, host 0.2.2-rc.5. These notes apply only to the <a href="../projects/dsh-plugin.html">DSH plugin</a>, not the injector/payload projects.</p>
+<div class="timeline zh-only">
+<div class="item"><span class="ver">v1.5.4</span><span class="date">当前 · 适配 0.2.2-rc.5</span><ul><li>对齐注入器 v1.0.0 版本线（两条线分线管理）</li><li>实测补丁命中 43 → 85，漂移 17 → 0</li><li>双版本 pattern 并存；数据目录迁移修复；模板库自有化（428 条 / 32 厂商）</li></ul></div>
 <div class="item"><span class="ver">v1.5.2</span><span class="date">结构升级</span><ul><li>放行边界改为固定六条；服从层五条硬行为；全厂商 12/12 覆盖</li><li>唤醒词统一为「小雨」「xiaoyu」</li></ul></div>
 <div class="item"><span class="ver">v1.5.0</span><span class="date">适配手机端 DSH Go</span><ul><li>surface 加 android 面；OPPO PLQ110 + KernelSU 真机验证</li></ul></div>
-<div class="item"><span class="ver">v1.4.x</span><span class="date">命令改名 / 超频自适应 / 规则强化 / 取消政治禁区</span><ul><li><code>/purge</code> → <code>/ysn</code>；超频按模型厂商分六组；规则写到交付深度；取消政治禁区</li></ul></div>
-<div class="item"><span class="ver">v1.3.2 / v1.3.0 / v1.2.0</span><span class="date">更早版本</span><ul><li>跨 home 兜底修复、纠偏链路修复、首批 29 个链路修复</li></ul></div>
-</div>
-<div class="note">v1.5.2 / v1.5.1 改动较大，如影响使用可回退：<code>git checkout v1.5.0 &amp;&amp; npm run deploy</code>，重启 DSH。</div>
+<div class="item"><span class="ver">v1.4.x</span><span class="date">命令改名 / 超频自适应 / 规则强化 / 取消政治禁区</span><ul><li><code>/purge</code> → <code>/ysn</code>；超频按模型厂商分六组；规则写到交付深度</li></ul></div>
+<div class="item"><span class="ver">v1.3.2 / v1.3.0 / v1.2.0</span><span class="date">更早版本</span><ul><li>跨 home 兜底修复、纠偏链路修复、首批 29 个链路修复</li></ul></div></div>
+<div class="timeline en-only">
+<div class="item"><span class="ver">v1.5.4</span><span class="date">current · host 0.2.2-rc.5</span><ul><li>Aligned version line with injector v1.0.0 (tracked separately)</li><li>Verified patch hits 43 → 85, drift 17 → 0</li><li>Dual-version patterns; data-dir migration fix; self-owned template library (428 / 32 vendors)</li></ul></div>
+<div class="item"><span class="ver">v1.5.2</span><span class="date">structural upgrade</span><ul><li>Six fixed allow-boundaries; five hard compliance behaviors; 12/12 vendor coverage</li><li>Wake words unified to 「小雨」/「xiaoyu」</li></ul></div>
+<div class="item"><span class="ver">v1.5.0</span><span class="date">DSH Go mobile</span><ul><li>Android surface; verified on OPPO PLQ110 + KernelSU</li></ul></div>
+<div class="item"><span class="ver">v1.4.x</span><span class="date">rename / adaptive overclock / rule depth / no-topic-exclusion</span><ul><li><code>/purge</code> → <code>/ysn</code>; six vendor overclock groups; rules written to delivery depth</li></ul></div>
+<div class="item"><span class="ver">v1.3.2 / v1.3.0 / v1.2.0</span><span class="date">earlier</span><ul><li>Cross-home fallback fix, correction-chain fix, first 29 link fixes</li></ul></div></div>
+<div class="note"><span class="zh-only">v1.5.2 / v1.5.1 改动较大，如影响使用可回退：<code>git checkout v1.5.0 &amp;&amp; npm run deploy</code>，重启 DSH。</span><span class="en-only">v1.5.2 / v1.5.1 were major changes; if unstable, roll back: <code>git checkout v1.5.0 &amp;&amp; npm run deploy</code>, then restart DSH.</span></div>
 </div></section>
-<footer><div class="wrap">MIT（注入器与载荷）· Apache-2.0（DSH 插件）· <a href="../index.html">返回首页</a></div></footer></body></html>
+<footer><div class="wrap"><span class="zh-only">MIT（注入器与载荷）· Apache-2.0（DSH 插件）· <a href="../index.html">返回首页</a></span><span class="en-only">MIT (injector & payloads) · Apache-2.0 (DSH plugin) · <a href="../index.html">Home</a></span></div></footer></body></html>

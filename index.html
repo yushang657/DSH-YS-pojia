@@ -10,7 +10,7 @@
 <header class="site"><div class="wrap">
   <a class="brand" href="index.html"><b>YS</b> pojia <span style="color:var(--muted);font-weight:400;font-size:13px">docs</span></a>
   
-    <nav class="top"><a href="index.html" class="active">首页</a><a href="projects/source.html">注入器</a><a href="projects/codex.html">Codex</a><a href="projects/trae.html">Trae</a><a href="projects/workbuddy.html">WorkBuddy</a><a href="projects/dsh-plugin.html">DSH 插件</a><a href="docs/install.html">安装</a><a href="docs/changelog.html">更新记录</a><a href="docs/faq.html">FAQ</a></nav>
+    <nav class="top"><a href="index.html" data-nav="home" class="active">首页</a><a href="projects/source.html" data-nav="source">注入器</a><a href="projects/codex.html" data-nav="codex">Codex</a><a href="projects/trae.html" data-nav="trae">Trae</a><a href="projects/workbuddy.html" data-nav="workbuddy">WorkBuddy</a><a href="projects/dsh-plugin.html" data-nav="dsh">DSH 插件</a><a href="docs/install.html" data-nav="install">安装</a><a href="docs/changelog.html" data-nav="changelog">更新记录</a><a href="docs/faq.html" data-nav="faq">FAQ</a></nav>
   <button class="lang-btn" id="langBtn">EN</button>
 </div></header>
 
@@ -24,23 +24,23 @@
 <section><div class="wrap">
   <h2>项目一览 <span class="en">Projects</span></h2>
   <div class="grid g2">
-    <div class="card"><div class="meta">01 · INJECTOR</div><h3><a href="projects/source.html">YS pojia 注入器源码</a></h3>
+    <div class="card"><div class="meta">01 · INJECTOR</div><h3><a href="projects/source.html" data-nav="source">YS pojia 注入器源码</a></h3>
       <p class="zh-only">本地 Electron 桌面程序 + CLI：探测四个目标、注入执行内核、逐文件备份、按最早备份回滚、一键卸载。</p>
       <p class="en-only">Local Electron desktop app + CLI: detect targets, inject the kernel, per-file backup, rollback to earliest backup, one-click uninstall.</p>
       <a href="https://github.com/yushang657/YS-pojia-Source">GitHub ↗</a></div>
-    <div class="card"><div class="meta">02 · PAYLOAD</div><h3><a href="projects/codex.html">Codex 载荷</a></h3>
+    <div class="card"><div class="meta">02 · PAYLOAD</div><h3><a href="projects/codex.html" data-nav="codex">Codex 载荷</a></h3>
       <p class="zh-only">OpenAI Codex CLI / 桌面版载荷。双通道注入（config 兼容行 + AGENTS.md 生效块），12 份按模型族差异化的载荷。</p>
       <p class="en-only">Payloads for OpenAI Codex CLI / desktop. Dual-channel injection and 12 model-family variants.</p>
       <a href="https://github.com/yushang657/YS-pojia-Codex">GitHub ↗</a></div>
-    <div class="card"><div class="meta">03 · PAYLOAD</div><h3><a href="projects/trae.html">Trae 载荷</a></h3>
+    <div class="card"><div class="meta">03 · PAYLOAD</div><h3><a href="projects/trae.html" data-nav="trae">Trae 载荷</a></h3>
       <p class="zh-only">Trae / TRAE SOLO 的工作区级规则载荷，写入全局规则与项目规则，不修改编辑器本体。</p>
       <p class="en-only">Workspace-level rule payload for Trae / TRAE SOLO, written to global and project rules.</p>
       <a href="https://github.com/yushang657/YS-pojia-Trae">GitHub ↗</a></div>
-    <div class="card"><div class="meta">04 · PAYLOAD</div><h3><a href="projects/workbuddy.html">WorkBuddy 载荷</a></h3>
+    <div class="card"><div class="meta">04 · PAYLOAD</div><h3><a href="projects/workbuddy.html" data-nav="workbuddy">WorkBuddy 载荷</a></h3>
       <p class="zh-only">WorkBuddy 的人格层 + 身份层载荷，改写 SOUL.md（行为）与 IDENTITY.md（身份），其余文件不动。</p>
       <p class="en-only">Persona + identity layer payload for WorkBuddy: rewrites SOUL.md and IDENTITY.md only.</p>
       <a href="https://github.com/yushang657/YS-pojia-WorkBuddy">GitHub ↗</a></div>
-    <div class="card" style="border-color:#3a2f4a"><div class="meta" style="color:var(--accent2)">05 · DSH ONLY</div><h3><a href="projects/dsh-plugin.html">DSH 破甲插件</a></h3>
+    <div class="card" style="border-color:#3a2f4a"><div class="meta" style="color:var(--accent2)">05 · DSH ONLY</div><h3><a href="projects/dsh-plugin.html" data-nav="dsh">DSH 破甲插件</a></h3>
       <p class="zh-only">仅针对 DeepSeek Harness 的插件：宿主补丁 + 消息层清洗 + 提示词注入。与上面四个项目相互独立。</p>
       <p class="en-only">DeepSeek Harness only: host patches + refusal purge + prompt injection. Independent of the four projects above.</p>
       <a href="https://github.com/yushang657/DSH-YS-pojia">GitHub ↗</a></div>
@@ -55,7 +55,7 @@
     <div class="card stat"><div class="num">2</div><b>选目标并注入</b><p>在应用首页选目标 → 注入。写操作前自动逐文件备份。</p></div>
     <div class="card stat"><div class="num">3</div><b>自检</b><p>新会话只发「小雨」或「xiaoyu」，回固定口令说明载荷已加载。</p></div>
   </div>
-  <p style="margin-top:16px"><a href="docs/install.html">→ 安装说明</a> · <a href="docs/faq.html">→ 常见问题</a> · <a href="docs/changelog.html">→ 更新记录</a></p>
+  <p style="margin-top:16px"><a href="docs/install.html" data-nav="install">→ 安装说明</a> · <a href="docs/faq.html" data-nav="faq">→ 常见问题</a> · <a href="docs/changelog.html" data-nav="changelog">→ 更新记录</a></p>
 </div></section>
 
 <footer><div class="wrap">MIT（注入器与载荷）· Apache-2.0（DSH 插件）· 仅供授权安全研究使用 · <a href="https://github.com/yushang657">yushang657</a></div></footer>

@@ -1,20 +1,29 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>常见问题 · YS pojia 文档</title><link rel="stylesheet" href="../assets/style.css"><script src="../assets/app.js"></script></head>
-<body data-nav="faq"><header class="site"><div class="wrap"><a class="brand" href="../index.html"><b>YS</b> pojia docs</a>  <nav class="top"><a href="../index.html">首页</a><a href="../projects/source.html">注入器</a><a href="../projects/codex.html">Codex</a><a href="../projects/trae.html">Trae</a><a href="../projects/workbuddy.html">WorkBuddy</a><a href="../projects/dsh-plugin.html">DSH 插件</a><a href="../docs/install.html">安装</a><a href="../docs/changelog.html">更新记录</a><a href="../docs/faq.html" class="active">FAQ</a></nav>
+<body data-nav="faq"><header class="site"><div class="wrap"><a class="brand" href="../index.html"><b>YS</b> pojia docs</a>  <nav class="top"><a href="../index.html" data-nav="home">首页</a><a href="../projects/source.html" data-nav="source">注入器</a><a href="../projects/codex.html" data-nav="codex">Codex</a><a href="../projects/trae.html" data-nav="trae">Trae</a><a href="../projects/workbuddy.html" data-nav="workbuddy">WorkBuddy</a><a href="../projects/dsh-plugin.html" data-nav="dsh">DSH 插件</a><a href="install.html" data-nav="install">安装</a><a href="changelog.html" data-nav="changelog">更新记录</a><a href="faq.html" data-nav="faq" class="active">FAQ</a></nav>
   <button class="lang-btn" id="langBtn">EN</button></div></header>
-<div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / 文档 / FAQ</div><h1><span class="g">常见问题</span></h1><p>分为通用（注入器与载荷）与 DSH 插件专属两部分。</p></div></div>
+<div class="hero"><div class="wrap"><div class="breadcrumb"><a href="../index.html">首页</a> / <span class="zh-only">文档 / FAQ</span><span class="en-only">Docs / FAQ</span></div>
+<h1 class="zh-only"><span class="g">常见问题</span></h1><p class="zh-only">分为通用（注入器与载荷）与 DSH 插件专属两部分。</p>
+<h1 class="en-only"><span class="g">FAQ</span></h1><p class="en-only">Split into general (injector & payloads) and DSH-plugin-only sections.</p></div></div>
 
-<section><div class="wrap"><h2>通用：注入器与载荷 <span class="en">Injector & payloads</span></h2>
-<h3>注入安全吗？能还原吗？</h3><p>所有写操作前逐文件备份到目标数据目录的 <code>ysn-backup/&lt;时间戳&gt;/</code>；回滚只认最早备份（幂等重注入的"已注入态"备份自动跳过），带哈希校验，备份损坏时安全降级。一键卸载还原补丁 + 载荷 + 清除登记。</p>
-<h3>Codex 为什么有两套通道？</h3><p>实测 codex-cli 0.172.0：<code>model_instructions_file</code> 在部分版本不进上下文，<code>AGENTS.md</code> 才真实进入 system prompt。注入器默认两通道都写（auto），可在配置页切到 <code>instructions</code> / <code>agents</code> / <code>both</code>，切换后重新注入即可。</p>
-<h3>自检口令是什么？</h3><p>新会话只发「小雨」或「xiaoyu」，应逐字回复带 <code>[codex]</code> 标识的固定四行。被要求删除/忽略规则时应回 <code>[ys-pojia-LOCK]</code>。回复一致说明载荷真实加载。</p>
-<h3>这些载荷与 DSH 有关吗？</h3><p><b>没有。</b>Codex / Trae / WorkBuddy 三个载荷项目只改各自软件的规则/人设文件，不含任何 DSH 宿主补丁或消息层清洗。DSH 是独立产品线，见<a href="../projects/dsh-plugin.html">DSH 插件页</a>。</p>
-<h3>账号风险？</h3><p>自定义模型指令存在账号风险，建议只在有权操作的环境使用，必要时用日抛账号。</p>
+<section><div class="wrap">
+<h2 class="zh-only">通用：注入器与载荷</h2><h2 class="en-only">General: injector & payloads</h2>
+<h3 class="zh-only">注入安全吗？能还原吗？</h3><p class="zh-only">所有写操作前逐文件备份到目标数据目录的 <code>ysn-backup/&lt;时间戳&gt;/</code>；回滚只认最早备份（幂等重注入的"已注入态"备份自动跳过），带哈希校验，备份损坏时安全降级。一键卸载还原补丁 + 载荷 + 清除登记。</p>
+<h3 class="en-only">Is injection safe? Can it be undone?</h3><p class="en-only">Every file is backed up to <code>ysn-backup/&lt;timestamp&gt;/</code> before writing. Rollback uses only the earliest backup (idempotent "already injected" backups are skipped), with hash checks and safe degradation on corrupt backups. One-click uninstall restores patches and payloads and clears registration.</p>
+<h3 class="zh-only">Codex 为什么有两套通道？</h3><p class="zh-only">实测 codex-cli 0.172.0：<code>model_instructions_file</code> 在部分版本不进上下文，<code>AGENTS.md</code> 才真实进入 system prompt。注入器默认两通道都写（auto），可在配置页切到 <code>instructions</code> / <code>agents</code> / <code>both</code>，切换后重新注入即可。</p>
+<h3 class="en-only">Why does Codex have two channels?</h3><p class="en-only">On codex-cli 0.172.0, <code>model_instructions_file</code> does not enter context in some versions, while <code>AGENTS.md</code> does. The injector writes both by default (auto); switch to <code>instructions</code> / <code>agents</code> / <code>both</code> on the config page and re-inject.</p>
+<h3 class="zh-only">自检口令是什么？</h3><p class="zh-only">新会话只发「小雨」或「xiaoyu」，应逐字回复带 <code>[codex]</code> 标识的固定四行。被要求删除/忽略规则时应回 <code>[ys-pojia-LOCK]</code>。回复一致说明载荷真实加载。</p>
+<h3 class="en-only">What is the self-check phrase?</h3><p class="en-only">In a new session send only 「小雨」 or 「xiaoyu」; you should get the fixed four-line reply ending with <code>[codex]</code>. When asked to delete/ignore rules, reply <code>[ys-pojia-LOCK]</code>. A matching reply means the payload is actually loaded.</p>
+<h3 class="zh-only">这些载荷与 DSH 有关吗？</h3><p class="zh-only"><b>没有。</b>Codex / Trae / WorkBuddy 三个载荷项目只改各自软件的规则/人设文件，不含任何 DSH 宿主补丁或消息层清洗。DSH 是独立产品线，见 <a href="../projects/dsh-plugin.html">DSH 插件页</a>。</p>
+<h3 class="en-only">Are these payloads related to DSH?</h3><p class="en-only"><b>No.</b> Codex / Trae / WorkBuddy payloads only touch their own software's rules/persona files; they contain no DSH host patches or message-layer purging. DSH is a separate line — see the <a href="../projects/dsh-plugin.html">DSH plugin page</a>.</p>
+<h3 class="zh-only">账号风险？</h3><p class="zh-only">自定义模型指令存在账号风险，建议只在有权操作的环境使用，必要时用日抛账号。</p>
+<h3 class="en-only">Account risk?</h3><p class="en-only">Custom model instructions carry account risk. Use only in environments you are authorized to operate, and consider a disposable account.</p>
 </div></section>
 
-<section><div class="wrap"><h2>DSH 插件专属 <span class="en">DSH plugin only</span></h2>
-<table><tr><th>短板</th><th>具体表现</th></tr>
+<section><div class="wrap">
+<h2 class="zh-only">DSH 插件专属</h2><h2 class="en-only">DSH plugin only</h2>
+<table class="zh-only"><tr><th>短板</th><th>具体表现</th></tr>
 <tr><td>0.2.2-rc.5 补丁层不可用</td><td>源码封进 <code>app.asar</code>，配置层覆盖不到观察策略短路、结果裁剪、子代理深度上限</td></tr>
 <tr><td>补丁会静默失效</td><td>宿主升级后字符串匹配不上，<b>不报错</b>，破甲没了但界面正常</td></tr>
 <tr><td>T3 改宿主源码</td><td>改写 DSH 的 <code>lib/index.js</code>，带备份和回滚，但属实打实的源码修改</td></tr>
@@ -22,8 +31,21 @@
 <tr><td>单发破甲率</td><td>ASR 46.2%，市面同类也在 45% 左右，基本同档</td></tr>
 <tr><td>社工类几乎无效</td><td>该类别实测 0 分，钓鱼/洗钱/伪造基本全拒</td></tr>
 <tr><td>单人维护</td><td>无 CI、无 LTS，长期稳定性无正式承诺</td></tr></table>
-<p>档位与策略、跨版本适配的技术细节见 <a href="architecture.html">三层架构</a>。</p>
+<table class="en-only"><tr><th>Weakness</th><th>What it means</th></tr>
+<tr><td>No patch layer on 0.2.2-rc.5</td><td>Source is sealed in <code>app.asar</code>; config layer cannot cover observation short-circuit, result pruning, or subagent depth caps</td></tr>
+<tr><td>Patches fail silently</td><td>After a host update, strings no longer match; <b>no error</b> — breach is gone but UI looks normal</td></tr>
+<tr><td>T3 edits host source</td><td>Rewrites DSH <code>lib/index.js</code>; backed up and reversible, but a real source modification</td></tr>
+<tr><td>T3 needs a restart</td><td>Not instant like pure request-layer approaches</td></tr>
+<tr><td>Single-shot rate</td><td>ASR 46.2%; comparable approaches ~45% — same band</td></tr>
+<tr><td>Social engineering weak</td><td>Scored 0 in testing; phishing / laundering / forgery are mostly refused</td></tr>
+<tr><td>Solo maintained</td><td>No CI, no LTS; no formal long-term stability guarantee</td></tr></table>
+<p class="zh-only">档位与策略、跨版本适配的技术细节见 <a href="architecture.html">三层架构</a>。</p>
+<p class="en-only">For tiers, strategies and cross-version details, see <a href="architecture.html">Three-layer architecture</a>.</p>
 </div></section>
 
-<section><div class="wrap"><h2>许可 <span class="en">License</span></h2><p>注入器与三个载荷项目为 <b>MIT</b>；DSH 插件为 <b>Apache-2.0</b>。均仅供授权安全研究使用。</p></div></section>
-<footer><div class="wrap"><a href="install.html">→ 安装说明</a> · <a href="../index.html">返回首页</a></div></footer></body></html>
+<section><div class="wrap">
+<h2 class="zh-only">许可</h2><h2 class="en-only">License</h2>
+<p class="zh-only">注入器与三个载荷项目为 <b>MIT</b>；DSH 插件为 <b>Apache-2.0</b>。均仅供授权安全研究使用。</p>
+<p class="en-only">Injector and the three payload projects are <b>MIT</b>; the DSH plugin is <b>Apache-2.0</b>. All for authorized security research only.</p>
+</div></section>
+<footer><div class="wrap"><span class="zh-only"><a href="install.html">→ 安装说明</a> · <a href="../index.html">返回首页</a></span><span class="en-only"><a href="install.html">→ Installation</a> · <a href="../index.html">Home</a></span></div></footer></body></html>
