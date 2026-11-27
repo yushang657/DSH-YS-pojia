@@ -25,6 +25,15 @@ nav.top a:hover,nav.top a.active{background:var(--card2);color:var(--txt);text-d
 .badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}
 .badge{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 13px;font-size:13px;color:var(--muted)}
 .badge b{color:var(--txt)}
+/* QQ 群交流入口：中性灰蓝按钮，不抢正文 */
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+.qq-link{display:inline-flex;align-items:center;gap:8px;background:var(--card2);border:1px solid var(--line);
+  color:var(--txt);border-radius:10px;padding:9px 16px;font-size:14px;font-weight:600;text-decoration:none}
+.qq-link:hover{border-color:#4a5563;text-decoration:none;background:#262d37}
+.qq-link .qq-ico{width:18px;height:18px;flex:none}
+.community{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.community .c-txt{flex:1;min-width:240px}
+.community .c-txt p{color:var(--muted);margin-top:4px}
 section{padding:38px 0;border-bottom:1px solid var(--line)}
 section:last-child{border-bottom:none}
 h2{font-size:25px;margin-bottom:18px;color:var(--txt)}
