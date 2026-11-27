@@ -3,10 +3,63 @@
 **破甲 plugin for DSH (DeepSeek Harness)** — make LLMs drop refusals on demand.
 
 **English** · [简体中文](README.zh-CN.md)
-> **[Landing page →](https://yushang657.github.io/DSH-YS-pojia/)** · interactive intro, layer diagrams, tier comparison, known weaknesses
+> **[Landing page →](https://YSN.github.io/ys-pojia/)** · interactive intro, layer diagrams, tier comparison, known weaknesses
 
 
 > 破甲 (pò jiǎ, "armor-breaking") is the Chinese term for prompt-layer breach testing: systematically finding what a model will and will not refuse, and how far it goes.
+
+
+### QQ 交流群
+
+有问题、想交流用法或反馈 Bug，欢迎加入 QQ 群「爬虫、破甲交流群」：
+
+[![QQ 交流群](qq-group.png)](https://qm.qq.com/q/ccMOQAFzTG)
+
+扫码或[点击链接加入群聊](https://qm.qq.com/q/ccMOQAFzTG) ↗
+
+## Project Positioning
+
+**DSH-ys-pojia** is a three-layer breach plugin for DeepSeek Harness (DSH):
+host patches, message-layer refusal purge, and prompt-layer injection —
+independent layers, per-file backups, reversible.
+
+### Strengths
+
+- **Three independent layers**: 96 idempotent host patches (70 files), a
+  message layer that rewrites historical refusals into neutral text with
+  prefilling, and an 11-section / 40-rule prompt kernel. Any layer can be
+  toggled or rolled back alone.
+- **40-category capability routing**: requests map to pre-authorized delivery
+  depth per category; category selection is trimmable (armor-rules.json).
+- **Measured, not guessed**: a built-in bench suite (40 probes) reports ASR
+  (46.2%); scores land in the asset panel so prompt edits show up as numbers.
+- **95 templates / 29 vendors** with vendor-name normalization (proxied model
+  names still match after prefix stripping).
+- **Sealed loading**: prompt body is AES-256-GCM sealed into asset-table.js —
+  editing the .md without re-embedding can never silently fail to apply.
+- **Self-check + tamper lock**: trigger word returns a verbatim passphrase with
+  a dynamic model marker; deletion attempts return `[ys-pojia-LOCK]`.
+
+### Known limits
+
+- Version coupling: patch hit-counts differ across DSH 0.2.x rc builds
+  (43 -> 85); new rcs need recalibration (dshTargets guards this).
+- Message-layer purge only rewrites history; it cannot block server-pushed
+  system directives.
+- Prompt layer works best on models with visible thinking (DeepSeek/Qwen);
+  closed models with hidden thinking only get output-layer constraints.
+
+### Sister projects
+
+Part of the **ys-pojia** suite — injector plus per-target payload repos,
+independent versioning, shared kernel and self-check passphrase:
+
+| Project | One-liner |
+|---|---|
+| [Injector (desktop + CLI)](https://github.com/yushang657/YS-pojia-Source) | Electron desktop + CLI: unified detect / inject / backup / rollback / update-check, backup-before-write, earliest-backup restore |
+| [Codex payload kit](https://github.com/yushang657/YS-pojia-Codex) | Dual-channel Codex payloads (config.toml + AGENTS.md), 13 model-family variants incl. a GPT-6.2 high-resistance tier |
+| [Trae payload](https://github.com/yushang657/YS-pojia-Trae) | Trae / TRAE SOLO rules-layer payload: global + project rules, editor binary untouched |
+| [WorkBuddy payload](https://github.com/yushang657/YS-pojia-WorkBuddy) | WorkBuddy persona + identity full-file replacement (SOUL.md + IDENTITY.md), dual self-check blocks |
 
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue?style=flat-square)](LICENSE)
 [![dsh](https://img.shields.io/badge/dsh-0.2.x-0ea5e9?style=flat-square)](package.json)
@@ -19,15 +72,6 @@
 ![benign](https://img.shields.io/badge/benign%20cost-%CE%94%200-16a34a?style=flat-square)
 
 ---
-
-
-### QQ 交流群
-
-有问题、想交流用法或反馈 Bug，欢迎加入 QQ 群「爬虫、破甲交流群」：
-
-[![QQ 交流群](qq-group.png)](https://qm.qq.com/q/ccMOQAFzTG)
-
-扫码或[点击链接加入群聊](https://qm.qq.com/q/ccMOQAFzTG) ↗
 
 ## How the breach works: three layers stacked, not a prompt tool
 
@@ -302,15 +346,16 @@ A category-blind "average 70" is a false conclusion. The same gpt-6.1-sol scores
 
 ## Changelog
 
-Current: **v1.5.3**. The full record - per-release technical detail and verification data - lives on the landing page, which suits long-form better than a README.
+Current: **v1.5.5**. The full record - per-release technical detail and verification data - lives on the landing page, which suits long-form better than a README.
 
-**[→ Full changelog](https://yushang657.github.io/DSH-YS-pojia/docs/changelog.html)**
+**[→ Full changelog](https://YSN.github.io/ys-pojia/#changelog)**
 
 ### Recent releases
 
 | Version | Theme | Highlights |
 |---|---|---|
-| **v1.5.3** | Compatibility | 0.2.2-rc.5 verified live: 43 to 85 patch hits |
+| **v1.5.5** | Hardening | Thinking-layer discipline, drift self-correction, anti-truncation audit block, format lock + few-shot inertia |
+| v1.5.3 | Compatibility | 0.2.2-rc.5 verified live: 43 to 85 patch hits |
 | v1.5.2 | Structure | Six-boundary allow-set, obedience layer, all-vendor overclock |
 | v1.5.1 | Maintenance | Routine maintenance |
 | **v1.5.0** | Android / DSH Go support | New `android` surface (six signals); `conversation.chat.node` skipped on Android; `shell.overlay` cut from seven children to two. Verified on a real OPPO PLQ110 with KernelSU |
@@ -779,3 +824,5 @@ button, capped at 190px with internal scrolling so it does not stretch the tab.
 - **Nature of results**: scores reflect only a model's behaviour on specific probes. They are not an endorsement of any model's security, nor legal, compliance or procurement advice.
 
 **Do not use to bypass systems you are not authorized to test.**
+
+> The injector and the four payload repos are independent: the injector handles detection, backup, injection and rollback; each repo ships only its payload. Use them separately or as a set.

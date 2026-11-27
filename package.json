@@ -1,6 +1,6 @@
 {
   "name": "ys-pojia",
-  "version": "1.5.4",
+  "version": "1.5.5",
   "description": "DSH 破甲 解限 越狱 清理 红队 逆向 | DSH (DeepSeek Harness) breach / jailbreak / unlock plugin: 96 host patches across 70 files, refusal purge, 11 prompt sections, tiers T3-T1, 40 rules at delivery depth, vendor-aware overclock with generic fallback, Android / DSH Go support, no topic exclusion, ASR 46.2%, 95 templates / 29 vendors.",
   "type": "module",
   "main": "lib/index.js",
