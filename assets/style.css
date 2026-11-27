@@ -1,98 +1,254 @@
+/* ============================================================
+   YS pojia docs — 主题 v2
+   中性近黑底（不显灰）· 柔白正文（不刺眼）· 单一强调蓝
+   正文级文字 ≥ 4.5:1（WCAG AA）；标题与强调 ≥ 7:1（AAA）
+   ============================================================ */
 :root{
-  --bg:#121519; --bg2:#181c22; --card:#1b2027; --card2:#222831;
-  --line:#2b323c; --txt:#d7dce3; --muted:#969fab; --accent:#8fa6bf;
-  --accent2:#a09cb5; --green:#82b19b; --amber:#c2a570; --red:#c48585;
-  --radius:14px; --maxw:1080px;
+  color-scheme: dark;
+
+  /* 底层：近黑，肉眼是黑、不是灰 */
+  --bg:#0A0A0A;
+  --bg2:#0F0F0F;
+  --card:#141414;
+  --card2:#1B1B1B;
+
+  /* 分隔：靠明度差分层，不靠灰色块 */
+  --line:#2A2A2A;
+  --line-strong:#3A3A3A;
+
+  /* 文字 */
+  --txt:#EDEDED;
+  --muted:#A3A3A3;
+
+  /* 强调：只用一个蓝，避免灰蓝浑浊 */
+  --accent:#7FB0FF;
+  --accent-hover:#A8C8FF;
+  --accent2:#C0A9FF;              /* DSH 产品线专用紫 */
+  --accent2-line:rgba(192,169,255,.32);
+
+  /* 语义色 */
+  --green:#7FD3AE;
+  --amber:#E3C68D;
+  --red:#FF8F87;
+
+  --radius:14px;
+  --maxw:1080px;
 }
+
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--txt);font:15px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+body{
+  background:var(--bg);
+  color:var(--txt);
+  font:15px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
 a{color:var(--accent);text-decoration:none}
-a:hover{text-decoration:underline;color:var(--txt)}
+a:hover{color:var(--accent-hover);text-decoration:underline;text-underline-offset:2px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+
 .wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
-header.site{position:sticky;top:0;z-index:50;background:rgba(18,21,25,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+
+/* ---------- 顶栏 ---------- */
+header.site{
+  position:sticky;top:0;z-index:50;
+  background:rgba(10,10,10,.86);
+  backdrop-filter:blur(14px) saturate(160%);
+  border-bottom:1px solid var(--line);
+}
 header.site .wrap{display:flex;align-items:center;gap:18px;height:60px;flex-wrap:wrap}
-.brand{font-weight:700;font-size:17px;color:var(--txt);white-space:nowrap}
+.brand{font-weight:700;font-size:17px;color:var(--txt);white-space:nowrap;letter-spacing:.2px}
 .brand b{color:var(--txt)}
-nav.top{display:flex;gap:4px;flex-wrap:wrap;flex:1}
-nav.top a{padding:6px 11px;border-radius:8px;color:var(--muted);font-size:14px}
-nav.top a:hover,nav.top a.active{background:var(--card2);color:var(--txt);text-decoration:none}
-.lang-btn{margin-left:auto;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:5px 12px;cursor:pointer;font-size:13px}
-.hero{padding:64px 0 40px;border-bottom:1px solid var(--line)}
+.brand-sub{color:var(--muted);font-weight:400;font-size:13px;margin-left:4px}
+
+nav.top{display:flex;gap:2px;flex-wrap:wrap;flex:1}
+nav.top a{padding:6px 11px;border-radius:8px;color:var(--muted);font-size:14px;transition:color .15s,background .15s}
+nav.top a:hover{background:var(--card2);color:var(--txt);text-decoration:none}
+nav.top a.active{background:var(--card2);color:var(--txt);box-shadow:inset 0 0 0 1px var(--line-strong)}
+
+.lang-btn{
+  margin-left:auto;background:var(--card2);border:1px solid var(--line);
+  color:var(--txt);border-radius:8px;padding:5px 12px;cursor:pointer;
+  font-size:13px;font-weight:600;min-width:52px;
+  transition:border-color .15s,background .15s;
+}
+.lang-btn:hover{border-color:var(--line-strong);background:#222}
+
+/* ---------- Hero ---------- */
+.hero{
+  padding:64px 0 40px;
+  border-bottom:1px solid var(--line);
+  background:radial-gradient(1100px 360px at 50% -12%,rgba(127,176,255,.07),transparent 72%);
+}
 .hero h1{font-size:40px;line-height:1.2;margin-bottom:14px;letter-spacing:-.5px;color:var(--txt)}
 .hero h1 .g{color:var(--txt)}
 .hero p{color:var(--muted);font-size:17px;max-width:760px}
+
 .badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}
-.badge{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 13px;font-size:13px;color:var(--muted)}
+.badge{
+  background:var(--card);border:1px solid var(--line);border-radius:999px;
+  padding:5px 13px;font-size:13px;color:var(--muted);
+}
 .badge b{color:var(--txt)}
-/* QQ 群交流入口：中性灰蓝按钮，不抢正文 */
+.badge a{color:var(--txt)}
+
 .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
-.qq-link{display:inline-block;background:var(--card2);border:1px solid var(--line);
-  color:var(--txt);border-radius:10px;padding:9px 16px;font-size:14px;font-weight:600;line-height:1.4;text-decoration:none;white-space:nowrap}
-.qq-link:hover{border-color:#4a5563;text-decoration:none;background:#262d37}
+.qq-link{
+  display:inline-block;background:var(--card2);border:1px solid var(--line-strong);
+  color:var(--txt);border-radius:10px;padding:9px 16px;font-size:14px;
+  font-weight:600;line-height:1.4;text-decoration:none;
+  transition:background .15s,border-color .15s;
+}
+.qq-link:hover{border-color:var(--accent);text-decoration:none;background:#212121}
+
 .community{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
 .community .c-txt{flex:1;min-width:240px}
 .community .c-txt p{color:var(--muted);margin-top:4px}
+
+/* ---------- 区块 ---------- */
 section{padding:38px 0;border-bottom:1px solid var(--line)}
 section:last-child{border-bottom:none}
-h2{font-size:25px;margin-bottom:18px;color:var(--txt)}
+h2{font-size:25px;margin-bottom:18px;color:var(--txt);letter-spacing:-.2px}
 h3{font-size:18px;margin:22px 0 10px;color:var(--txt)}
-h2 .en,h3 .en{color:var(--muted);font-weight:400;font-size:.7em;margin-left:8px}
+
+/* 英文副标题：中文模式下是弱化的陪衬；英文模式直接升格为主标题 */
+h2 .en,h3 .en{color:var(--muted);font-weight:400;font-size:.7em;margin-left:8px;letter-spacing:.2px}
+body.lang-en h2 .en,html.lang-en h2 .en,
+body.lang-en h3 .en,html.lang-en h3 .en{
+  font-size:inherit;color:var(--txt);font-weight:600;margin-left:0;letter-spacing:inherit;
+}
+
 .grid{display:grid;gap:16px}
 .g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
 .g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
 .g4{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
-.card:hover{border-color:#3a424e}
+
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:20px;transition:border-color .15s,background .15s;
+}
+.card:hover{border-color:var(--line-strong);background:#161616}
 .card h3{margin-top:0}
 .card p{color:var(--muted)}
 .card .meta{color:var(--muted);font-size:12px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px}
+.card .meta.alt{color:var(--accent2)}
 .card a{font-weight:600}
+
+/* DSH 条目：紫色调区分产品线，不再写死内联颜色 */
+.card.dsh{border-color:var(--accent2-line)}
+.card.dsh:hover{border-color:var(--accent2);background:#171418}
+
 .stat{text-align:center}
-.stat .num{font-size:30px;font-weight:800;color:var(--txt)}
+.stat .num{font-size:30px;font-weight:800;color:var(--txt);line-height:1.2}
 .stat .lbl{color:var(--muted);font-size:13px}
+
+/* ---------- 表格 ---------- */
 table{width:100%;border-collapse:collapse;font-size:14px}
 th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
 th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.4px}
-tr:hover td{background:rgba(255,255,255,.025)}
-.tag{display:inline-block;padding:2px 9px;border-radius:6px;font-size:12px;background:var(--card2);color:var(--muted);border:1px solid var(--line)}
-.tag.ok{background:var(--card2);color:var(--txt);border-color:#3a4a44}
-.tag.warn{background:var(--card2);color:var(--txt);border-color:#4a4436}
-.tag.no{background:var(--card2);color:var(--txt);border-color:#4a3a3a}
-code{background:var(--card2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.9em;font-family:ui-monospace,Consolas,monospace;color:var(--txt)}
-pre{background:#11151a;border:1px solid var(--line);border-radius:10px;padding:16px;overflow:auto;font-size:13px;line-height:1.6;margin:12px 0}
-pre code{background:none;border:none;padding:0}
-.copy{float:right;background:var(--card2);border:1px solid var(--line);color:var(--muted);border-radius:6px;padding:3px 9px;cursor:pointer;font-size:12px}
-.copy:hover{color:var(--txt)}
+tr:hover td{background:var(--card2)}
+
+/* ---------- 标签 ---------- */
+.tag{
+  display:inline-block;padding:2px 9px;border-radius:6px;font-size:12px;
+  background:var(--card2);color:var(--muted);border:1px solid var(--line);
+}
+.tag.ok{color:var(--green);border-color:rgba(127,211,174,.35)}
+.tag.warn{color:var(--amber);border-color:rgba(227,198,141,.35)}
+.tag.no{color:var(--red);border-color:rgba(255,143,135,.35)}
+
+/* ---------- 代码 ---------- */
+code{
+  background:var(--card2);border:1px solid var(--line);border-radius:5px;
+  padding:1px 6px;font-size:.9em;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+  color:var(--txt);
+}
+/* 代码块必须能从卡片里“看出来”：更深的底 + 明确描边 */
+pre{
+  position:relative;
+  background:var(--bg2);border:1px solid var(--line-strong);border-radius:10px;
+  padding:16px;overflow:auto;font-size:13px;line-height:1.6;margin:12px 0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+pre code{background:none;border:none;padding:0;color:var(--txt)}
+.copy{
+  position:absolute;top:10px;right:10px;
+  background:var(--card2);border:1px solid var(--line);color:var(--muted);
+  border-radius:6px;padding:3px 9px;cursor:pointer;font-size:12px;
+  transition:color .15s,border-color .15s;
+}
+.copy:hover{color:var(--txt);border-color:var(--line-strong)}
+
+/* ---------- 列表 / 时间线 / 提示 ---------- */
 ul.clean{list-style:none;padding-left:0}
 ul.clean li{padding:7px 0 7px 22px;position:relative;color:var(--muted)}
-ul.clean li:before{content:"▸";position:absolute;left:2px;color:var(--muted)}
+ul.clean li:before{content:"▸";position:absolute;left:2px;color:var(--accent);opacity:.75}
 ul.clean li b{color:var(--txt)}
+
 .timeline{border-left:2px solid var(--line);margin-left:8px;padding-left:22px}
 .timeline .item{position:relative;padding:0 0 26px}
-.timeline .item:before{content:"";position:absolute;left:-29px;top:6px;width:11px;height:11px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--bg)}
+.timeline .item:before{
+  content:"";position:absolute;left:-29px;top:6px;width:11px;height:11px;border-radius:50%;
+  background:var(--accent);box-shadow:0 0 0 4px var(--bg);
+}
 .timeline .ver{font-weight:700;color:var(--txt)}
 .timeline .date{color:var(--muted);font-size:12px;margin-left:8px}
 .timeline ul{padding-left:18px;color:var(--muted)}
 .timeline li{padding:3px 0}
-.note{background:rgba(255,255,255,.025);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:12px 16px;color:var(--muted);margin:14px 0}
+
+/* 提示条：用卡片底而非 2.5% 半透明白，边界更清楚 */
+.note{
+  background:var(--card2);border-left:3px solid var(--accent);
+  border-radius:0 8px 8px 0;padding:12px 16px;color:var(--muted);margin:14px 0;
+}
 .note b{color:var(--txt)}
+
 .breadcrumb{color:var(--muted);font-size:13px;padding:18px 0 0}
 .breadcrumb a{color:var(--muted)}
-footer{padding:30px 0;color:var(--muted);font-size:13px;text-align:center;border-top:1px solid var(--line)}
-/* ── 中英切换 ──
-   默认显示中文（zh-only），英文隐藏。切换 lang-en 后反过来。
-   注意：zh-only/en-only 用在 <p>/<ul>/<div> 等块级元素上，
-   所以显示时必须用 block（不能用 inline，否则段落挤成一行）。 */
+.breadcrumb a:hover{color:var(--txt)}
+.mt{margin-top:16px}
+
+footer{
+  padding:30px 0;color:var(--muted);font-size:13px;text-align:center;
+  border-top:1px solid var(--line);
+}
+footer a{color:var(--muted)}
+footer a:hover{color:var(--txt)}
+
+/* ============================================================
+   中英切换
+   默认中文；html.lang-en（尽早打标记，避免首屏闪中文）或
+   body.lang-en 时翻转。块级用 block，行内必须显式 inline，
+   否则中文段落里的英文片段会把整段挤成一行。
+   ============================================================ */
 .en-only{display:none}
-span.en-only, a.en-only, b.en-only, code.en-only{display:none}
-body.lang-en .zh-only{display:none!important}
-body.lang-en .en-only{display:block!important}
-body.lang-en span.en-only, body.lang-en a.en-only, body.lang-en b.en-only, body.lang-en code.en-only{display:inline!important}
+
+body.lang-en .zh-only,html.lang-en .zh-only{display:none!important}
+body.lang-en .en-only,html.lang-en .en-only{display:block!important}
+body.lang-en li.en-only,html.lang-en li.en-only{display:list-item!important}
+body.lang-en span.en-only,html.lang-en span.en-only,
+body.lang-en a.en-only,html.lang-en a.en-only,
+body.lang-en b.en-only,html.lang-en b.en-only,
+body.lang-en i.en-only,html.lang-en i.en-only,
+body.lang-en em.en-only,html.lang-en em.en-only,
+body.lang-en strong.en-only,html.lang-en strong.en-only,
+body.lang-en code.en-only,html.lang-en code.en-only{display:inline!important}
+
+/* 兼容旧写法 */
 body.lang-en .zh-block{display:none!important}
 body.lang-en .en-block{display:block!important}
+
 @media(max-width:700px){
+  .hero{padding:44px 0 32px}
   .hero h1{font-size:30px}
   header.site .wrap{height:auto;padding:10px 20px;gap:8px}
-  nav.top{order:3;width:100%;overflow-x:auto}
+  nav.top{order:3;width:100%;overflow-x:auto;padding-bottom:2px}
+  nav.top::-webkit-scrollbar{display:none}
+  .lang-btn{margin-left:auto}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;scroll-behavior:auto!important}
 }

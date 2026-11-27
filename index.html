@@ -1,24 +1,29 @@
 ﻿<!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>YS pojia — 项目文档</title>
 <meta name="description" content="YS pojia 系列：本地注入器 + DSH / Codex / Trae / WorkBuddy 载荷与插件。文档、安装、更新记录。">
+<meta name="theme-color" content="#0A0A0A">
 <link rel="stylesheet" href="assets/style.css"><script src="assets/app.js"></script>
 </head>
 <body data-nav="home">
 <header class="site"><div class="wrap">
-  <a class="brand" href="index.html"><b>YS</b> pojia <span style="color:var(--muted);font-weight:400;font-size:13px">docs</span></a>
-  
-    <nav class="top"><a href="index.html" data-nav="home" class="active">首页</a><a href="projects/source.html" data-nav="source">注入器</a><a href="projects/codex.html" data-nav="codex">Codex</a><a href="projects/trae.html" data-nav="trae">Trae</a><a href="projects/workbuddy.html" data-nav="workbuddy">WorkBuddy</a><a href="projects/dsh-plugin.html" data-nav="dsh">DSH 插件</a><a href="docs/install.html" data-nav="install">安装</a><a href="docs/changelog.html" data-nav="changelog">更新记录</a><a href="docs/faq.html" data-nav="faq">FAQ</a></nav>
-  <button class="lang-btn" id="langBtn">EN</button>
+  <a class="brand" href="index.html"><b>YS</b> pojia<span class="brand-sub">docs</span></a>
+  <nav class="top"><a href="index.html" data-nav="home" class="active">首页</a><a href="projects/source.html" data-nav="source">注入器</a><a href="projects/codex.html" data-nav="codex">Codex</a><a href="projects/trae.html" data-nav="trae">Trae</a><a href="projects/workbuddy.html" data-nav="workbuddy">WorkBuddy</a><a href="projects/dsh-plugin.html" data-nav="dsh">DSH 插件</a><a href="docs/install.html" data-nav="install">安装</a><a href="docs/changelog.html" data-nav="changelog">更新记录</a><a href="docs/faq.html" data-nav="faq">FAQ</a></nav>
+  <button class="lang-btn" id="langBtn" type="button" aria-label="Switch to English" aria-pressed="false">EN</button>
 </div></header>
 
 <div class="hero"><div class="wrap">
-  <h1><span class="g">YS pojia</span> 项目文档</h1>
+  <h1><span class="g">YS pojia</span> <span class="zh-only">项目文档</span><span class="en-only">Project Docs</span></h1>
   <p class="zh-only">一个本地桌面注入器，为本机已安装的主流 AI 编程工具注入统一的「执行内核」，让它们以完整、直接、可验证的工程方式交付任务。所有写操作前备份、可回滚，支持 CLI 无窗口运行。</p>
   <p class="en-only">A local desktop injector that installs a unified execution kernel into installed AI coding tools, so they deliver complete, direct, verifiable engineering work. Every write is backed up and reversible; CLI mode supported.</p>
-  <div class="badges"><span class="badge"><b>v1.0.0</b> 注入器</span><span class="badge"><b>4</b> 目标软件</span><span class="badge"><b>MIT</b> 载荷 / 注入器</span><span class="badge"><b>Apache-2.0</b> DSH 插件</span></div>
+  <div class="badges">
+    <span class="badge"><b>v1.0.0</b> <span class="zh-only">注入器</span><span class="en-only">injector</span></span>
+    <span class="badge"><b>4</b> <span class="zh-only">目标软件</span><span class="en-only">target apps</span></span>
+    <span class="badge"><b>MIT</b> <span class="zh-only">载荷 / 注入器</span><span class="en-only">payloads / injector</span></span>
+    <span class="badge"><b>Apache-2.0</b> <span class="zh-only">DSH 插件</span><span class="en-only">DSH plugin</span></span>
+  </div>
   <div class="cta-row">
     <a class="qq-link" href="https://qm.qq.com/q/ccMOQAFzTG" target="_blank" rel="noopener"><span class="zh-only">加入 QQ 交流群 · 爬虫 / 破甲交流</span><span class="en-only">Join QQ group · Crawling / Breach discussion</span></a>
   </div>
@@ -27,48 +32,65 @@
 <section><div class="wrap">
   <h2>项目一览 <span class="en">Projects</span></h2>
   <div class="grid g2">
-    <div class="card"><div class="meta">01 · INJECTOR</div><h3><a href="projects/source.html" data-nav="source">YS pojia 注入器源码</a></h3>
+    <div class="card"><div class="meta">01 · INJECTOR</div><h3><a href="projects/source.html" data-nav="source"><span class="zh-only">YS pojia 注入器源码</span><span class="en-only">YS pojia Injector Source</span></a></h3>
       <p class="zh-only">本地 Electron 桌面程序 + CLI：探测四个目标、注入执行内核、逐文件备份、按最早备份回滚、一键卸载。</p>
       <p class="en-only">Local Electron desktop app + CLI: detect targets, inject the kernel, per-file backup, rollback to earliest backup, one-click uninstall.</p>
       <a href="https://github.com/yushang657/YS-pojia-Source">GitHub ↗</a></div>
-    <div class="card"><div class="meta">02 · PAYLOAD</div><h3><a href="projects/codex.html" data-nav="codex">Codex 载荷</a></h3>
+    <div class="card"><div class="meta">02 · PAYLOAD</div><h3><a href="projects/codex.html" data-nav="codex"><span class="zh-only">Codex 载荷</span><span class="en-only">Codex Payload</span></a></h3>
       <p class="zh-only">OpenAI Codex CLI / 桌面版载荷。双通道注入（config 兼容行 + AGENTS.md 生效块），12 份按模型族差异化的载荷。</p>
       <p class="en-only">Payloads for OpenAI Codex CLI / desktop. Dual-channel injection and 12 model-family variants.</p>
       <a href="https://github.com/yushang657/YS-pojia-Codex">GitHub ↗</a></div>
-    <div class="card"><div class="meta">03 · PAYLOAD</div><h3><a href="projects/trae.html" data-nav="trae">Trae 载荷</a></h3>
+    <div class="card"><div class="meta">03 · PAYLOAD</div><h3><a href="projects/trae.html" data-nav="trae"><span class="zh-only">Trae 载荷</span><span class="en-only">Trae Payload</span></a></h3>
       <p class="zh-only">Trae / TRAE SOLO 的工作区级规则载荷，写入全局规则与项目规则，不修改编辑器本体。</p>
       <p class="en-only">Workspace-level rule payload for Trae / TRAE SOLO, written to global and project rules.</p>
       <a href="https://github.com/yushang657/YS-pojia-Trae">GitHub ↗</a></div>
-    <div class="card"><div class="meta">04 · PAYLOAD</div><h3><a href="projects/workbuddy.html" data-nav="workbuddy">WorkBuddy 载荷</a></h3>
+    <div class="card"><div class="meta">04 · PAYLOAD</div><h3><a href="projects/workbuddy.html" data-nav="workbuddy"><span class="zh-only">WorkBuddy 载荷</span><span class="en-only">WorkBuddy Payload</span></a></h3>
       <p class="zh-only">WorkBuddy 的人格层 + 身份层载荷，改写 SOUL.md（行为）与 IDENTITY.md（身份），其余文件不动。</p>
       <p class="en-only">Persona + identity layer payload for WorkBuddy: rewrites SOUL.md and IDENTITY.md only.</p>
       <a href="https://github.com/yushang657/YS-pojia-WorkBuddy">GitHub ↗</a></div>
-    <div class="card" style="border-color:#3a2f4a"><div class="meta" style="color:var(--accent2)">05 · DSH ONLY</div><h3><a href="projects/dsh-plugin.html" data-nav="dsh">DSH 破甲插件</a></h3>
+    <div class="card dsh"><div class="meta alt">05 · DSH ONLY</div><h3><a href="projects/dsh-plugin.html" data-nav="dsh"><span class="zh-only">DSH 破甲插件</span><span class="en-only">DSH Breach Plugin</span></a></h3>
       <p class="zh-only">仅针对 DeepSeek Harness 的插件：宿主补丁 + 消息层清洗 + 提示词注入。与上面四个项目相互独立。</p>
       <p class="en-only">DeepSeek Harness only: host patches + refusal purge + prompt injection. Independent of the four projects above.</p>
       <a href="https://github.com/yushang657/DSH-YS-pojia">GitHub ↗</a></div>
   </div>
-  <div class="note"><b>说明：</b>Codex / Trae / WorkBuddy 三个载荷项目与 DSH（DeepSeek Harness）<b>没有任何关系</b>，它们是为各自软件编写的执行内核载荷。DSH 插件是单独的一条产品线，只在 <code>projects/dsh-plugin.html</code> 与 <code>docs/architecture.html</code> 里讲。</div>
+  <div class="note">
+    <p class="zh-only"><b>说明：</b>Codex / Trae / WorkBuddy 三个载荷项目与 DSH（DeepSeek Harness）<b>没有任何关系</b>，它们是为各自软件编写的执行内核载荷。DSH 插件是单独的一条产品线，只在 <code>projects/dsh-plugin.html</code> 与 <code>docs/architecture.html</code> 里讲。</p>
+    <p class="en-only"><b>Note:</b> the Codex / Trae / WorkBuddy payload projects have <b>nothing to do with DSH</b> (DeepSeek Harness); each is an execution-kernel payload for its own tool. The DSH plugin is a separate product line, covered only in <code>projects/dsh-plugin.html</code> and <code>docs/architecture.html</code>.</p>
+  </div>
 </div></section>
 
 <section><div class="wrap">
   <h2>快速开始 <span class="en">Quick start</span></h2>
   <div class="grid g3">
-    <div class="card stat"><div class="num">1</div><b>安装注入器</b><p>克隆 <a href="https://github.com/yushang657/YS-pojia-Source">YS-pojia-Source</a>，双击 <code>YS-pojia.exe</code>（或 CLI）。</p></div>
-    <div class="card stat"><div class="num">2</div><b>选目标并注入</b><p>在应用首页选目标 → 注入。写操作前自动逐文件备份。</p></div>
-    <div class="card stat"><div class="num">3</div><b>自检</b><p>新会话只发「小雨」或「xiaoyu」，回固定口令说明载荷已加载。</p></div>
+    <div class="card stat"><div class="num">1</div>
+      <b class="zh-only">安装注入器</b><b class="en-only">Install the injector</b>
+      <p class="zh-only">克隆 <a href="https://github.com/yushang657/YS-pojia-Source">YS-pojia-Source</a>，双击 <code>YS-pojia.exe</code>（或 CLI）。</p>
+      <p class="en-only">Clone <a href="https://github.com/yushang657/YS-pojia-Source">YS-pojia-Source</a>, then run <code>YS-pojia.exe</code> (or the CLI).</p></div>
+    <div class="card stat"><div class="num">2</div>
+      <b class="zh-only">选目标并注入</b><b class="en-only">Pick a target and inject</b>
+      <p class="zh-only">在应用首页选目标 → 注入。写操作前自动逐文件备份。</p>
+      <p class="en-only">On the home screen choose a target → inject. Every file is backed up before writing.</p></div>
+    <div class="card stat"><div class="num">3</div>
+      <b class="zh-only">自检</b><b class="en-only">Self-check</b>
+      <p class="zh-only">新会话只发「小雨」或「xiaoyu」，回固定口令说明载荷已加载。</p>
+      <p class="en-only">In a new session send only 「小雨」 or 「xiaoyu」; the fixed reply confirms the payload is loaded.</p></div>
   </div>
-  <p style="margin-top:16px"><a href="docs/install.html" data-nav="install">→ 安装说明</a> · <a href="docs/faq.html" data-nav="faq">→ 常见问题</a> · <a href="docs/changelog.html" data-nav="changelog">→ 更新记录</a></p>
+  <p class="mt">
+    <span class="zh-only"><a href="docs/install.html" data-nav="install">→ 安装说明</a> · <a href="docs/faq.html" data-nav="faq">→ 常见问题</a> · <a href="docs/changelog.html" data-nav="changelog">→ 更新记录</a></span>
+    <span class="en-only"><a href="docs/install.html">→ Installation</a> · <a href="docs/faq.html">→ FAQ</a> · <a href="docs/changelog.html">→ Changelog</a></span>
+  </p>
 </div></section>
+
 <section><div class="wrap community">
   <div class="c-txt">
     <h2 class="zh-only">加入交流群</h2><h2 class="en-only">Join the community</h2>
     <p class="zh-only">有问题、想交流用法或反馈 Bug，欢迎加入 QQ 群「爬虫、破甲交流群」一起讨论。</p>
-    <p class="en-only">Questions, usage tips or bug reports — join our QQ group "Crawling & Breach" to discuss.</p>
+    <p class="en-only">Questions, usage tips or bug reports — join our QQ group "Crawling &amp; Breach" to discuss.</p>
   </div>
   <a class="qq-link" href="https://qm.qq.com/q/ccMOQAFzTG" target="_blank" rel="noopener"><span class="zh-only">点击加入群聊 ↗</span><span class="en-only">Click to join ↗</span></a>
 </div></section>
 
-
-<footer><div class="wrap">MIT（注入器与载荷）· Apache-2.0（DSH 插件）· 仅供授权安全研究使用 · <a href="https://github.com/yushang657">yushang657</a></div></footer>
+<footer><div class="wrap">
+  <span class="zh-only">MIT（注入器与载荷）· Apache-2.0（DSH 插件）· 仅供授权安全研究使用 · </span><span class="en-only">MIT (injector &amp; payloads) · Apache-2.0 (DSH plugin) · For authorized security research only · </span><a href="https://github.com/yushang657">yushang657</a>
+</div></footer>
 </body></html>
